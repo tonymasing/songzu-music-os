@@ -1,0 +1,73 @@
+{
+  "name": "ai-music-os",
+  "version": "0.32.16",
+  "private": true,
+  "description": "本機優先的 AI 音樂創作、作品資料庫、音色資料庫與發行工作台。",
+  "author": "Songzu",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "next dev --webpack",
+    "local:access": "node scripts/local-access.mjs",
+    "electron:dev": "node scripts/prepare-electron.mjs --mode=dev && electron electron/main.cjs",
+    "app:icon": "node scripts/generate-electron-icon.mjs",
+    "electron:dmg": "npm run app:icon && npm run native:build && npm run build && node scripts/prepare-electron.mjs --mode=start && electron-builder --projectDir .electron-package --mac dmg --config electron-builder.yml",
+    "connect:relay": "node scripts/songzu-connect/relay.mjs",
+    "connect:host": "node scripts/songzu-connect/host.mjs",
+    "connect:tunnel": "node scripts/songzu-connect/tunnel.mjs",
+    "service:install": "node scripts/macos-service.mjs install",
+    "service:uninstall": "node scripts/macos-service.mjs uninstall",
+    "service:restart": "node scripts/macos-service.mjs restart",
+    "service:status": "node scripts/macos-service.mjs status",
+    "build": "next build --webpack",
+    "start": "node scripts/start-standalone.mjs",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:init": "node prisma/init-db.mjs",
+    "db:upgrade-v17": "node prisma/upgrade-v17.mjs",
+    "db:upgrade-v18": "node prisma/upgrade-v18.mjs",
+    "db:upgrade-v19": "node prisma/upgrade-v19.mjs",
+    "db:upgrade-v20": "node prisma/upgrade-v20.mjs",
+    "db:upgrade-v21": "node prisma/upgrade-v21.mjs",
+    "native:build": "cargo build --release --manifest-path native/songzu-daw-core/Cargo.toml",
+    "sounds:import": "node scripts/import-open-sound-assets.mjs",
+    "sounds:drums": "node scripts/import-human-drum-kit.mjs",
+    "harmony:setup": "node scripts/setup-harmony-engine.mjs",
+    "references:import": "node scripts/import-hermes-music-db.mjs",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.4.2",
+    "@capacitor/core": "^8.4.2",
+    "@capacitor/ios": "^8.4.2",
+    "@prisma/client": "6.19.3",
+    "clsx": "2.1.1",
+    "lucide-react": "1.14.0",
+    "next": "16.2.12",
+    "pdfkit": "^0.19.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.4.2",
+    "@types/node": "25.7.0",
+    "@types/pdfkit": "^0.17.6",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.12",
+    "postcss": "8.5.25",
+    "prisma": "6.19.3",
+    "typescript": "6.0.3"
+  },
+  "overrides": {
+    "postcss": "8.5.25",
+    "sharp": "0.35.3"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

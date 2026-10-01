@@ -1,0 +1,130 @@
+.tabIcon { display: none; }
+
+/* Keep the OS palette and rounded contours local to the record browser. */
+:global(.os-cyber) .records {
+  --record-gold: var(--cy-gold, #ffc93c);
+  --record-purple: var(--cy-purple, #b46cff);
+  --record-green: var(--cy-green, #3dffa0);
+}
+
+:global(.os-cyber) .records .tabs {
+  gap: 8px;
+  padding: 16px 3px 12px;
+  border-bottom-color: color-mix(in srgb, var(--record-purple) 45%, transparent);
+  scrollbar-width: thin;
+  scrollbar-color: var(--record-purple) rgb(180 108 255 / 9%);
+  scroll-padding-inline: 3px;
+}
+:global(.os-cyber) .tabs::-webkit-scrollbar { height: 4px; }
+:global(.os-cyber) .tabs::-webkit-scrollbar-track { background: rgb(180 108 255 / 9%); border-radius: 4px; }
+:global(.os-cyber) .tabs::-webkit-scrollbar-thumb { background: linear-gradient(90deg, var(--record-purple), var(--record-green)); border-radius: 4px; }
+
+:global(.os-cyber) .records .tabs button {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 11px 12px;
+  border: 1px solid color-mix(in srgb, var(--record-purple) 58%, transparent);
+  border-radius: var(--os-radius-control, 10px);
+  background: linear-gradient(135deg, rgb(180 108 255 / 14%), rgb(9 8 24 / 65%) 65%);
+  box-shadow: inset 0 1px 0 rgb(221 185 255 / 12%), inset 0 0 14px rgb(180 108 255 / 6%);
+  color: #e1d9ee;
+  font-weight: 600;
+  letter-spacing: .035em;
+  line-height: 1.5;
+  transition: border-color 160ms, background 160ms, box-shadow 160ms, color 160ms;
+}
+:global(.os-cyber) .records .tabs .tabIcon {
+  display: block;
+  flex: 0 0 auto;
+  color: var(--record-green);
+}
+:global(.os-cyber) .records .tabs .tabCount {
+  min-width: 24px;
+  margin: 0;
+  padding: 2px 5px;
+  border: 1px solid rgb(180 108 255 / 35%);
+  border-radius: var(--os-radius-badge, 6px);
+  background: rgb(5 7 19 / 55%);
+  color: #c9b4e5;
+  font-family: var(--font-number, ui-monospace), monospace;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  opacity: 1;
+}
+:global(.os-cyber) .records .tabs button:hover {
+  border-color: var(--record-green);
+  background: linear-gradient(135deg, rgb(61 255 160 / 12%), rgb(9 8 24 / 75%) 70%);
+  box-shadow: inset 0 0 12px rgb(61 255 160 / 7%), 0 0 10px rgb(61 255 160 / 17%);
+  color: #eafff4;
+}
+:global(.os-cyber) .records .tabs button[aria-selected="true"] {
+  border-color: var(--record-gold);
+  background: linear-gradient(125deg, rgb(255 201 60 / 24%), rgb(180 108 255 / 15%) 80%), rgb(16 10 28 / 65%);
+  color: #fff0be;
+  box-shadow: inset 0 0 0 1px rgb(255 227 150 / 18%), inset 0 0 18px rgb(255 201 60 / 14%), 0 0 8px rgb(255 201 60 / 42%), 0 0 20px rgb(180 108 255 / 20%);
+}
+:global(.os-cyber) .records .tabs button[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  inset: auto 24% 0;
+  border-radius: 2px;
+  background: #fff0b5;
+  box-shadow: 0 0 7px var(--record-gold);
+  pointer-events: none;
+}
+:global(.os-cyber) .records .tabs button[aria-selected="true"] .tabIcon { color: var(--record-gold); filter: drop-shadow(0 0 4px rgb(255 201 60 / 55%)); }
+:global(.os-cyber) .records .tabs button[aria-selected="true"] .tabCount { color: #ffe498; border-color: rgb(255 201 60 / 60%); background: rgb(255 201 60 / 10%); }
+
+:global(.os-cyber) .records .filters label { display: inline-flex; align-items: center; gap: 7px; color: #d4c8e5; font-size: 13px; }
+:global(.os-cyber) .records .filters input[type="checkbox"] { accent-color: var(--record-green); }
+:global(.os-cyber) .records .list { display: grid; gap: 8px; }
+:global(.os-cyber) .records .row {
+  position: relative;
+  padding-inline: 16px 12px;
+  border: 1px solid rgb(180 108 255 / 38%);
+  border-radius: var(--os-radius-tile, 12px);
+  background: linear-gradient(105deg, rgb(180 108 255 / 12%), transparent 55%), rgb(7 8 22 / 38%);
+  box-shadow: inset 0 1px 0 rgb(217 180 255 / 6%), inset 0 0 18px rgb(180 108 255 / 4%);
+  transition: border-color 160ms, background 160ms, box-shadow 160ms;
+}
+:global(.os-cyber) .records .row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 22%;
+  bottom: 22%;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--record-purple);
+  box-shadow: 0 0 7px rgb(180 108 255 / 65%);
+  pointer-events: none;
+}
+:global(.os-cyber) .records .row strong { overflow-wrap: anywhere; }
+:global(.os-cyber) .records .row > svg { color: var(--record-green); }
+:global(.os-cyber) .records .row:hover {
+  border-color: rgb(61 255 160 / 65%);
+  background: linear-gradient(105deg, rgb(61 255 160 / 10%), rgb(180 108 255 / 6%) 70%), rgb(7 8 22 / 55%);
+  box-shadow: inset 0 0 18px rgb(61 255 160 / 5%), 0 0 10px rgb(61 255 160 / 12%);
+}
+:global(.os-cyber) .records .row:hover::before { background: var(--record-green); box-shadow: 0 0 7px rgb(61 255 160 / 65%); }
+:global(.os-cyber) .records .status {
+  justify-self: start;
+  padding: 3px 6px;
+  border: 1px solid currentColor;
+  border-radius: var(--os-radius-badge, 6px);
+  background: rgb(61 255 160 / 5%);
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+:global(.os-cyber) .records :is(.tabs button, .row):focus-visible { outline: 2px solid var(--record-green); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  :global(.os-cyber) .records :is(.tabs button, .row) { transition: none; }
+}

@@ -1,0 +1,351 @@
+/* DAW typography: all font families, sizes, weights and tracking live here.
+   Existing size/line-height steps are retained to preserve the control layout.
+   Full upstream glyph sets; local assets and SIL OFL licenses in public/fonts/daw. */
+@font-face {
+  font-family: "Songzu Noto Sans TC";
+  src: url("/fonts/daw/noto-sans-tc-variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* Match the existing Latin line box without compressing Chinese glyphs. */
+@font-face {
+  font-family: "Songzu Noto Sans TC";
+  src: url("/fonts/daw/noto-sans-tc-variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range: U+0000-024F;
+  ascent-override: 95%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Songzu Oxanium";
+  src: url("/fonts/daw/oxanium-variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  ascent-override: 95%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+:root {
+  --font-ui: "Songzu Noto Sans TC", "Noto Sans TC", "Source Han Sans TC", "思源黑體", "PingFang TC", "Microsoft JhengHei UI", "Microsoft JhengHei", sans-serif;
+  --font-display: var(--font-ui);
+  --font-number: "Songzu Oxanium", "Oxanium", "Bahnschrift", "DIN Alternate", var(--font-ui);
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", var(--font-ui), monospace;
+
+  --text-xs: 10px;
+  --text-sm: 11px;
+  --text-md: 12px;
+  --text-lg: 14px;
+  --text-xl: 16px;
+  --text-display: 24px;
+  /* Compact labels and legacy display steps keep the existing physical sizes. */
+  --text-score-micro: 6px;
+  --text-score-tiny: 7px;
+  --text-micro: 8px;
+  --text-tiny: 9px;
+  --text-body: 13px;
+  --text-title: 15px;
+  --text-lead: 17px;
+  --text-section: 18px;
+  --text-heading: 19px;
+  --text-heading-lg: 20px;
+  --text-subdisplay: 22px;
+  --text-readout: 27px;
+  --text-readout-lg: 28px;
+  --text-hero: 34px;
+  --text-hero-lg: 36px;
+  --text-brand: clamp(34px, 5vw, 58px);
+  --text-launcher: clamp(38px, 5vw, 64px);
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+  --weight-black: 900;
+  --tracking-none: 0;
+  --tracking-tight: 0.01em;
+  --tracking-ui: 0.015em;
+  --tracking-info: 0.02em;
+  --tracking-display: 0.065em;
+  --tracking-overline: 0.12em;
+
+  --leading-solid: 1;
+  --leading-tight: 1.12;
+  --leading-compact: 1.15;
+  --leading-heading: 1.2;
+  --leading-title: 1.25;
+  --leading-label: 1.3;
+  --leading-short: 1.35;
+  --leading-ui: 1.4;
+  --leading-info: 1.45;
+  --leading-body: 1.5;
+  --leading-note: 1.55;
+  --leading-prose: 1.6;
+  --leading-hero: 0.98;
+  --leading-micro-fixed: 12px;
+  --leading-tiny-fixed: 13px;
+  --leading-xs-fixed: 14px;
+  --leading-icon-fixed: 24px;
+  --leading-input: 1.1875;
+  --leading-tab-narrow: 26px;
+  --leading-transport-caption: 16px;
+  --leading-track-title: 18px;
+  --leading-track-kind: 11px;
+  --leading-rack-title: 25px;
+  --leading-rack-title-narrow: 18.5px;
+  --leading-eyebrow: 15px;
+
+  --type-display-condense: 0.88;
+  --type-display-slant: -6deg;
+  --type-label-condense: 0.94;
+  --type-label-slant: -6deg;
+  --type-control-slant: 3deg;
+  --type-number-slant: 6deg;
+  --weight-control: 650;
+  --weight-label: 700;
+  --tracking-instrument: 0.025em;
+  --type-white: #f6faff;
+  --type-muted: #bdcce2;
+  --type-cyan: #1ee8ff;
+  --type-magenta: #ff5cae;
+  --type-red: #ff667b;
+}
+
+.daw-studio-workspace,
+.daw-launcher,
+.daw-workspace {
+  font-family: var(--font-ui);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-ui);
+  font-synthesis: none;
+  font-kerning: normal;
+}
+
+.daw-studio-workspace :is(button, input, select, textarea, .daw-header-action, .daw-theme-trigger) {
+  font-family: var(--font-ui);
+  font-weight: var(--weight-control) !important;
+  letter-spacing: var(--tracking-none);
+  font-style: oblique var(--type-control-slant);
+  font-synthesis: style;
+}
+
+.daw-studio-workspace :is(small, .subtle, .daw-studio-title em, .daw-track-title > span, .daw-pro-console dt, .daw-field-hint, .field-help) {
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-ui);
+}
+
+.daw-studio-workspace :is(input, select) {
+  line-height: var(--leading-input);
+}
+
+.daw-studio-workspace :is(.daw-track-title strong, .daw-clip-label, .daw-channel-head strong, .daw-score-track-label strong) {
+  font-family: var(--font-ui);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-none);
+}
+
+.daw-studio-workspace .daw-track-title strong {
+  line-height: var(--leading-track-title);
+}
+
+.daw-studio-workspace .daw-track-title > span {
+  line-height: var(--leading-track-kind);
+}
+
+.daw-studio-workspace :is(h1, h2, .daw-studio-title strong, .daw-pane-heading strong, .daw-timeline-header strong, .daw-dock-summary strong),
+.daw-launcher-header h1 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-extrabold);
+  letter-spacing: var(--tracking-display);
+}
+
+.daw-studio-workspace :is(.daw-studio-title strong, .daw-pro-console-header h2, .daw-pane-heading strong, .daw-timeline-header h2, .daw-dock-summary strong),
+.daw-launcher-header h1 {
+  font-weight: var(--weight-black);
+  transform: scaleX(var(--type-display-condense)) skewX(var(--type-display-slant));
+  transform-origin: left center;
+}
+
+.daw-studio-workspace :is(h3, h4, .daw-record-setup-head strong, .daw-record-capture-head strong) {
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+}
+
+/* Numbers are a separate instrument face; mixed CJK labels fall back to Noto. */
+.daw-studio-workspace :is(
+  .daw-time-display strong, .daw-time-display > span,
+  .daw-project-lcd input, .daw-project-lcd select,
+  input[type="number"], .daw-ruler-tick, .daw-ruler-tick strong, .daw-ruler-tick small,
+  .daw-clip small, .daw-loop-controls input, .daw-punch-editor > span,
+  .daw-channel-readout strong, .daw-master-readout strong, .daw-channel-gain-readout,
+  .daw-pro-metric-grid strong, .daw-pro-readout dd, .daw-pro-dsp-grid strong,
+  .daw-waveform-scale strong, .daw-zoom-control strong,
+  .daw-studio-stats strong, .daw-rhythm-lock strong
+) {
+  font-family: var(--font-number);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-heading);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1, "pnum" 0, "zero" 1;
+  letter-spacing: var(--tracking-none);
+}
+
+.daw-studio-workspace .daw-time-display strong {
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-solid);
+}
+
+.daw-studio-workspace .daw-time-display > span {
+  line-height: var(--leading-transport-caption);
+}
+
+/* Mixed-script channel titles retain their original line boxes. */
+.daw-studio-workspace .daw-control-dock .daw-rack-top > div {
+  line-height: var(--leading-input);
+}
+
+.daw-studio-workspace .daw-control-dock .daw-rack-top h2 {
+  line-height: var(--leading-rack-title);
+}
+
+.daw-studio-workspace .daw-control-dock .daw-rack-top .eyebrow {
+  line-height: var(--leading-eyebrow);
+}
+
+.daw-studio-workspace .daw-pro-console button {
+  line-height: var(--leading-transport-caption);
+}
+
+.daw-studio-workspace :is(.daw-track-controls, .daw-channel-buttons) button {
+  font-family: var(--font-number);
+}
+
+.daw-studio-workspace :is(code, pre, kbd, samp) {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-none);
+}
+
+/* Precise ink, not continuous text bloom. Existing panel/edge light stays intact. */
+.daw-studio-workspace[data-studio-theme="cyberpunk"],
+.daw-studio-workspace[data-studio-theme="cyberpunk"] * {
+  text-shadow: none !important;
+}
+
+.daw-studio-workspace[data-studio-theme="cyberpunk"] :is(.daw-pro-console-header h2, .daw-studio-title strong) {
+  text-shadow: 0.5px 0 color-mix(in srgb, var(--type-cyan) 22%, transparent) !important;
+}
+
+.daw-studio-workspace[data-studio-theme="cyberpunk"] :is(button.active, button.primary, button[aria-pressed="true"], .daw-header-action.primary) {
+  text-shadow: 0 0 4px color-mix(in srgb, var(--type-magenta) 24%, transparent) !important;
+}
+
+@media (forced-colors: active) {
+  .daw-studio-workspace[data-studio-theme="cyberpunk"] * {
+    text-shadow: none !important;
+  }
+}
+
+/* Keep the original narrow-screen tab row height when the Latin face changes. */
+@media (max-width: 680px) {
+  .daw-studio-workspace .daw-pro-tabs button {
+    /* Keep narrow tabs on one line while retaining the sharper text slant. */
+    font-weight: var(--weight-semibold) !important;
+    line-height: var(--leading-tab-narrow);
+  }
+}
+
+@media (max-width: 700px) {
+  .daw-studio-workspace .daw-control-dock .daw-rack-top h2 {
+    line-height: var(--leading-rack-title-narrow);
+  }
+}
+
+/* Sharper HUD letterforms: slant text independently of its control frame. */
+.daw-studio-workspace :is(.daw-track-title strong, .daw-channel-head strong) {
+  font-weight: var(--weight-label);
+  font-style: normal;
+  transform: scaleX(var(--type-label-condense)) skewX(var(--type-label-slant));
+  transform-origin: left center;
+}
+
+.daw-studio-workspace :is(.daw-time-display strong, .daw-project-lcd input, .daw-project-lcd select) {
+  font-style: oblique var(--type-number-slant);
+  font-synthesis: style;
+  letter-spacing: var(--tracking-instrument);
+}
+
+/* Track-column names match the library shortcuts, without geometric distortion. */
+.daw-studio-workspace[data-studio-theme="cyberpunk"] :is(.daw-track-title strong, .daw-score-track-label strong) {
+  font-family: var(--font-ui);
+  font-weight: var(--weight-control);
+  font-style: oblique var(--type-control-slant);
+  font-synthesis: style;
+  letter-spacing: var(--tracking-none);
+  transform: none;
+}
+
+/* TATWO 2026-09-25: Tony prefers the original DAW lettering. Restore the Inter/system stack,
+   remove forced slant/condense, and bring back the cyberpunk neon text glow. */
+.daw-studio-workspace {
+  --font-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: var(--font-ui);
+  --font-number: var(--font-ui);
+  --type-display-condense: 1;
+  --type-display-slant: 0deg;
+  --type-label-condense: 1;
+  --type-label-slant: 0deg;
+  --type-control-slant: 0deg;
+  --type-number-slant: 0deg;
+  --weight-control: 800;
+  --tracking-display: 0;
+  --tracking-instrument: 0;
+}
+
+.daw-studio-workspace.daw-studio-workspace :is(button, input, select, textarea, .daw-header-action, .daw-theme-trigger, .daw-track-title strong, .daw-channel-head strong, .daw-score-track-label strong, .daw-clip-label, .daw-clip small) {
+  font-style: normal;
+  font-synthesis: none;
+}
+
+.daw-studio-workspace.daw-studio-workspace :is(.daw-studio-title strong, .daw-pro-console-header h2, .daw-pane-heading strong, .daw-timeline-header h2, .daw-timeline-header strong, .daw-dock-summary strong, .daw-track-title strong, .daw-channel-head strong) {
+  transform: none;
+}
+
+/* Neon text glow (overrides the global text-shadow reset for this theme only). */
+.daw-studio-workspace.daw-studio-workspace[data-studio-theme="cyberpunk"] :is(button, .daw-header-action, .daw-studio-back):not(.daw-clip):not(:disabled) {
+  text-shadow: 0 0 6px rgba(30, 232, 255, 0.6), 0 1px 2px #000 !important;
+}
+
+.daw-studio-workspace.daw-studio-workspace[data-studio-theme="cyberpunk"] :is(button.active, button.primary, button[aria-pressed="true"], .daw-header-action.primary, .daw-pro-primary-action):not(.daw-clip) {
+  text-shadow: 0 0 6px #ff2d95, 0 0 14px rgba(255, 45, 149, 0.6) !important;
+}
+
+.daw-studio-workspace.daw-studio-workspace[data-studio-theme="cyberpunk"] .daw-time-display strong {
+  text-shadow: 0 0 2px #fff, 0 0 6px #ff2d95, 0 0 14px #ff2d95, 0 0 30px rgba(255, 45, 149, 0.8), 0 0 60px rgba(255, 45, 149, 0.45) !important;
+}
+
+.daw-studio-workspace.daw-studio-workspace[data-studio-theme="cyberpunk"] :is(.daw-project-lcd input, .daw-project-lcd select, .daw-project-lcd strong) {
+  text-shadow: 0 0 6px rgba(30, 232, 255, 0.9), 0 0 18px rgba(30, 232, 255, 0.5) !important;
+}
+
+.daw-studio-workspace.daw-studio-workspace[data-studio-theme="cyberpunk"] :is(.daw-studio-title strong, .daw-pro-console-header h2, .daw-pane-heading strong, .daw-timeline-header h2, .daw-timeline-header strong, .daw-dock-summary strong) {
+  text-shadow: 0 0 8px rgba(255, 45, 149, 0.8), 0 0 20px rgba(255, 45, 149, 0.4) !important;
+}
+
+.daw-studio-workspace.daw-studio-workspace[data-studio-theme="cyberpunk"] :is(.daw-track-title strong, .daw-score-track-label strong, .daw-channel-head strong, .daw-pane-heading small, .daw-pro-eyebrow, .daw-ruler-tick strong) {
+  text-shadow: 0 0 6px rgba(30, 232, 255, 0.55), 0 1px 2px #000 !important;
+}
+
+@media (forced-colors: active) {
+  .daw-studio-workspace.daw-studio-workspace[data-studio-theme="cyberpunk"] * {
+    text-shadow: none !important;
+  }
+}

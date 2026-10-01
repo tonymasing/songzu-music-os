@@ -1,0 +1,243 @@
+/* System architecture console. Shell interactions and other workspaces stay shared. */
+:global(.app-shell.app-shell.os-cyber) .workspace {
+  --console-line: rgba(180, 108, 255, 0.36);
+  --console-glass: rgba(10, 9, 24, 0.66);
+  --console-muted: #c3bed4;
+  color: #f3f1fa;
+  min-width: 0;
+}
+
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-hero) {
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.8fr);
+  gap: 24px;
+  padding: 26px;
+  border: 1px solid var(--console-line);
+  border-top: 2px solid var(--cy-gold);
+  border-radius: var(--os-radius-panel, 14px);
+  background: linear-gradient(115deg, rgba(255, 201, 60, 0.06), transparent 55%), var(--console-glass);
+  box-shadow: inset 0 1px 12px rgba(255, 201, 60, 0.06), 0 0 16px rgba(180, 108, 255, 0.08);
+}
+
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.eyebrow) {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--cy-gold);
+  text-shadow: none;
+}
+
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-hero-copy h1) {
+  font-size: clamp(28px, 3.4vw, 42px);
+  line-height: 1.25;
+  letter-spacing: 0.08em;
+  text-shadow: none;
+}
+
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.subtle),
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.muted) {
+  color: var(--console-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.dashboard-actions) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.dashboard-actions .button) {
+  flex: 1 1 120px;
+  font-size: 13px;
+  border-radius: var(--os-radius-control, 10px);
+  text-shadow: none;
+}
+
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-hero-board) { align-content: stretch; }
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-hero-board > span) {
+  align-content: center;
+  min-height: 80px;
+  border-radius: var(--os-radius-tile, 12px);
+  background: rgba(12, 10, 28, 0.5);
+  border-color: var(--console-line);
+  border-left: 2px solid var(--cy-purple);
+  color: var(--console-muted);
+  font-weight: 500;
+  gap: 9px;
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-hero-board strong) {
+  color: var(--cy-gold);
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  text-shadow: none;
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-hero-board > span:nth-child(n + 3) strong) {
+  font-size: 18px;
+  color: var(--cy-green);
+}
+
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.section) { margin-top: 28px; scroll-margin-top: 90px; }
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.section-heading) { align-items: end; gap: 16px; }
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.section-heading h2) {
+  font-size: 21px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-shadow: none;
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.section-heading .muted) { max-width: 440px; }
+
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-flow) {
+  counter-reset: stage;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--console-line);
+  border-radius: var(--os-radius-panel, 14px);
+  background: rgba(180, 108, 255, 0.16);
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-flow > div) {
+  counter-increment: stage;
+  border-radius: var(--os-radius-tile, 12px);
+  min-height: 112px;
+  padding: 14px;
+  gap: 5px;
+  border: 0;
+  background: rgba(9, 10, 23, 0.76);
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-flow > div::before) {
+  content: "0" counter(stage);
+  color: var(--cy-green);
+  font: 500 11px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 0.12em;
+  margin-bottom: 6px;
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-flow > div::after) { content: none; }
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-flow strong) { font-size: 14px; text-shadow: none; }
+
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-role-grid) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  border: 0;
+  background: none;
+  overflow: visible;
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-role-row) {
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 10px 12px;
+  padding: 18px;
+  align-items: start;
+  border: 1px solid var(--console-line);
+  border-radius: var(--os-radius-panel, 14px);
+  background: var(--console-glass);
+  transition: border-color 140ms ease, background-color 140ms ease;
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-role-icon) {
+  border-radius: var(--os-radius-control, 10px);
+  color: var(--cy-green);
+  border-color: rgba(61, 255, 160, 0.35);
+  background: rgba(61, 255, 160, 0.06);
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-role-row > span:nth-child(n + 3)),
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-role-row em) {
+  grid-column: 2;
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-role-row small) {
+  color: var(--console-muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-role-row strong) { font-size: 17px; text-shadow: none; }
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-role-row em) {
+  border-top: 1px solid rgba(180, 108, 255, 0.18);
+  padding-top: 8px;
+  color: #aba6bf;
+  font-size: 10px;
+  font-weight: 400;
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-role-row:hover),
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-action-strip a:hover) {
+  border-color: var(--cy-green);
+  background: rgba(13, 31, 29, 0.78);
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(a:focus-visible) {
+  outline: 2px solid var(--cy-green);
+  outline-offset: 3px;
+}
+
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-intelligence-layout) {
+  grid-template-columns: minmax(0, 1.4fr) minmax(250px, 1fr);
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-intel-main),
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-governance),
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.open-core-lane) {
+  background: var(--console-glass);
+  border: 1px solid var(--console-line);
+  border-top: 2px solid var(--cy-purple);
+  border-radius: var(--os-radius-panel, 14px);
+  padding: 20px;
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-intel-grid) { grid-template-columns: 1fr; gap: 14px; }
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-intel-item small),
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-rule p),
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.open-core-lane li) {
+  color: var(--console-muted);
+  line-height: 1.7;
+  font-weight: 400;
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-intel-item svg),
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.open-core-lane-head svg) { color: var(--cy-green); }
+
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-roadmap-list) {
+  border: 1px solid var(--console-line);
+  border-radius: var(--os-radius-panel, 14px);
+  background: var(--console-glass);
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-roadmap-row),
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-roadmap-row:hover),
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-roadmap-row:focus-visible) { padding: 18px 14px; }
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-roadmap-labels) { flex-wrap: wrap; }
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-roadmap-labels small),
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-roadmap-status) {
+  border-radius: var(--os-radius-badge, 6px);
+  border-color: rgba(61, 255, 160, 0.4);
+  color: var(--cy-green);
+  background: rgba(61, 255, 160, 0.06);
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-roadmap-labels small[data-priority="P0"]) {
+  color: var(--cy-gold);
+  border-color: rgba(255, 201, 60, 0.45);
+  background: rgba(255, 201, 60, 0.08);
+}
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-action-strip) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+:global(.app-shell.app-shell.os-cyber) .workspace :global(.system-action-strip a) {
+  border-radius: var(--os-radius-panel, 14px);
+  background: var(--console-glass);
+  border-color: var(--console-line);
+  box-shadow: none;
+}
+
+@media (max-width: 1100px) {
+  :global(.app-shell.app-shell.os-cyber) .workspace :global(.system-hero) { grid-template-columns: 1fr; }
+  :global(.app-shell.app-shell.os-cyber) .workspace :global(.system-hero-board) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  :global(.app-shell.app-shell.os-cyber) .workspace :global(.system-flow) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  :global(.app-shell.app-shell.os-cyber) .workspace :global(.system-flow > div) { min-height: 98px; }
+}
+@media (max-width: 650px) {
+  :global(.app-shell.app-shell.os-cyber) .workspace :global(.system-hero) { padding: 18px; gap: 18px; }
+  :global(.app-shell.app-shell.os-cyber) .workspace :global(.system-hero-board) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  :global(.app-shell.app-shell.os-cyber) .workspace :global(.system-role-grid),
+  :global(.app-shell.app-shell.os-cyber) .workspace :global(.system-intelligence-layout),
+  :global(.app-shell.app-shell.os-cyber) .workspace :global(.open-core-lanes) { grid-template-columns: 1fr; }
+  :global(.app-shell.app-shell.os-cyber) .workspace :global(.system-flow),
+  :global(.app-shell.app-shell.os-cyber) .workspace :global(.system-action-strip) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  :global(.app-shell.app-shell.os-cyber) .workspace :global(.section-heading) { align-items: start; flex-direction: column; }
+  :global(.app-shell.app-shell.os-cyber) .workspace :global(.system-role-row) { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :global(.app-shell.app-shell.os-cyber) .workspace :global(.system-role-row) { transition: none; }
+}

@@ -1,0 +1,30 @@
+export type PublicSongPreviewDto = {
+  token: string;
+  publicUrl: string;
+  title: string;
+  description: string | null;
+  genre: string | null;
+  mood: string[];
+  releaseUrl: string | null;
+  contactInfo: string | null;
+  playCount: number;
+  previewDurationSeconds: number;
+  previewReady: boolean;
+  coverReady: boolean;
+  offers: Array<{
+    id: string;
+    offerType: string;
+    title: string;
+    description: string | null;
+    price: number;
+    currency: string;
+    rightsSummary: string;
+    deliveryDays: number | null;
+    maxClaims: number;
+    claimedCount: number;
+    reservedCount: number;
+    remaining: number;
+    status: string;
+    sortOrder: number;
+  }>;
+};

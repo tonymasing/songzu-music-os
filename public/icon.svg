@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="頌祖音樂 OS">
+  <rect width="512" height="512" rx="104" fill="#1f7a68"/>
+  <circle cx="256" cy="256" r="176" fill="#f5f4ee" opacity="0.94"/>
+  <path d="M296 132v190c0 45-37 76-83 76-41 0-73-24-73-59 0-38 38-63 82-55 12 2 24 7 33 14V178l122-28v54l-81 18z" fill="#20241f"/>
+  <path d="M166 164c23-30 55-50 94-57 40-7 78 2 110 25" fill="none" stroke="#c95f3e" stroke-width="24" stroke-linecap="round"/>
+  <path d="M140 406c34 24 73 36 116 36 42 0 82-12 116-36" fill="none" stroke="#1f7a68" stroke-width="18" stroke-linecap="round"/>
+</svg>

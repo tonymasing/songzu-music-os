@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f5f4ee" />
+    <meta name="color-scheme" content="light" />
+    <title>頌祖音樂</title>
+    <link rel="icon" href="icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="setupView" class="setup-view">
+      <section class="setup-shell" aria-labelledby="setupTitle">
+        <header class="setup-header">
+          <img class="brand-mark" src="icon.png" alt="" />
+          <div>
+            <span>頌祖音樂行動端</span>
+            <strong>連接你的音樂主機</strong>
+          </div>
+          <span class="version" id="appVersion">0.32.15</span>
+        </header>
+
+        <div class="connection-state" id="connectionState" data-state="idle" role="status" aria-live="polite">
+          <span class="state-dot" aria-hidden="true"></span>
+          <div>
+            <strong id="stateTitle">等待連線</strong>
+            <span id="stateMessage">確認 Mac 已開啟頌祖音樂 OS。</span>
+          </div>
+        </div>
+
+        <form id="connectionForm" class="connection-form">
+          <label for="serverUrl">頌祖 Connect 網址或 Mac 區網位址</label>
+          <div class="url-control">
+            <input
+              id="serverUrl"
+              name="serverUrl"
+              type="url"
+              inputmode="url"
+              autocomplete="url"
+              autocapitalize="none"
+              spellcheck="false"
+              placeholder="貼上外出連線網址，或輸入 http://Mac名稱.local:3000"
+              required
+            />
+            <button id="connectButton" type="submit">連接</button>
+          </div>
+          <label class="pairing-code-field" for="pairingCode">
+            <span>首次配對碼</span>
+            <input
+              id="pairingCode"
+              name="pairingCode"
+              type="text"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              maxlength="7"
+              pattern="[0-9 ]{6,7}"
+              placeholder="000 000"
+            />
+            <small>已配對裝置不用重填。配對碼請在 Mac 的「本機 App」頁產生；外出與同 Wi-Fi 共用授權。</small>
+          </label>
+        </form>
+
+        <div class="host-checks">
+          <span><b>1</b> 外出使用頌祖 Connect；同 Wi-Fi 可直接輸入 Mac 位址</span>
+          <span><b>2</b> 首次連線輸入 Mac 顯示的 6 位數配對碼</span>
+          <span><b>3</b> 原生 WAV 先留在手機，授權後驗證同步</span>
+        </div>
+      </section>
+    </main>
+
+    <section id="appView" class="app-view" hidden>
+      <iframe id="appFrame" title="頌祖音樂 OS 工作台" allow="microphone; camera; clipboard-read; clipboard-write" referrerpolicy="no-referrer"></iframe>
+      <main id="remoteWorkspace" class="remote-workspace" hidden>
+        <header class="remote-header">
+          <div>
+            <span>頌祖 Connect</span>
+            <strong>外出行動工作台</strong>
+          </div>
+          <b id="remoteStatus">端對端加密</b>
+        </header>
+        <section class="remote-hero">
+          <span>MAC 主機已連線</span>
+          <h1>作品留在家裡，工作跟著你走。</h1>
+          <p>查看歌曲歸檔、準備手機錄音，並把原始 WAV 分段加密同步回 Mac。</p>
+          <div class="remote-actions">
+            <button id="remoteRecordButton" type="button">開始錄音</button>
+            <button id="remoteRefreshButton" type="button">重新整理</button>
+          </div>
+        </section>
+        <section class="remote-catalog" aria-labelledby="remoteCatalogTitle">
+          <div class="remote-section-heading">
+            <div><span>作品主機</span><h2 id="remoteCatalogTitle">最近歌曲</h2></div>
+            <b id="remoteSongCount">0 首</b>
+          </div>
+          <div id="remoteSongList" class="remote-song-list"><p>正在讀取主機資料。</p></div>
+        </section>
+        <section class="remote-security">
+          <strong>這條通道的保護</strong>
+          <span>中繼站只轉送密文</span>
+          <span>原始 WAV 不轉檔、不覆蓋</span>
+          <span>平台發布與敏感設定仍限 Mac 執行</span>
+        </section>
+      </main>
+      <button id="hostButton" class="host-button" type="button" aria-label="主機連線設定">主機</button>
+      <div id="offlineBanner" class="offline-banner" hidden>
+        <span>主機連線中斷</span>
+        <button id="retryButton" type="button">重新連線</button>
+      </div>
+    </section>
+
+    <button id="recorderButton" class="recorder-button" type="button" aria-label="開啟手機錄音室">
+      <span class="record-dot" aria-hidden="true"></span>
+      <span>錄音</span>
+      <b id="pendingBadge" hidden>0</b>
+    </button>
+
+    <section id="recorderSheet" class="recorder-sheet" hidden aria-labelledby="recorderTitle" aria-modal="true" role="dialog">
+      <button id="recorderScrim" class="recorder-scrim" type="button" aria-label="關閉手機錄音室"></button>
+      <div class="recorder-panel">
+        <header class="recorder-header">
+          <div>
+            <span>手機無損錄音</span>
+            <h1 id="recorderTitle">隨身錄音室</h1>
+          </div>
+          <button id="closeRecorderButton" class="icon-button" type="button" aria-label="關閉">×</button>
+        </header>
+
+        <div id="nativeStatus" class="native-status" data-state="checking" role="status" aria-live="polite">
+          <span class="state-dot" aria-hidden="true"></span>
+          <div>
+            <strong id="nativeStatusTitle">檢查錄音引擎</strong>
+            <span id="nativeStatusMessage">正在確認手機麥克風與本機保存空間。</span>
+          </div>
+        </div>
+
+        <div class="recorder-scroll">
+          <section class="capture-stage" aria-label="錄音狀態">
+            <div class="capture-clock">
+              <span id="recordingStateLabel">準備錄音</span>
+              <strong id="recordingClock">00:00.0</strong>
+              <small id="recordingFormat">48 kHz / 24-bit WAV / Mono</small>
+            </div>
+            <div class="input-meter" aria-label="即時輸入音量">
+              <span id="inputMeterFill"></span>
+              <i class="meter-safe"></i>
+              <i class="meter-warn"></i>
+            </div>
+            <div class="capture-meta">
+              <span>輸入 <b id="inputDevice">等待偵測</b></span>
+              <span>峰值 <b id="peakLevel">-∞ dB</b></span>
+            </div>
+            <button id="recordButton" class="primary-record-button" type="button" disabled>
+              <span class="record-core" aria-hidden="true"></span>
+              <strong id="recordButtonLabel">開始錄音</strong>
+            </button>
+          </section>
+
+          <section class="recording-destination" aria-labelledby="destinationTitle">
+            <div class="section-heading">
+              <div>
+                <span>歸檔位置</span>
+                <h2 id="destinationTitle">錄完要放在哪裡</h2>
+              </div>
+              <b id="hostStatusPill">離線可錄</b>
+            </div>
+            <div class="field-grid">
+              <label>
+                <span>歌曲</span>
+                <select id="songSelect"></select>
+              </label>
+              <label>
+                <span>DAW 音軌</span>
+                <select id="trackSelect"></select>
+              </label>
+              <label>
+                <span>錄音內容</span>
+                <select id="instrumentSelect">
+                  <option value="vocal">人聲</option>
+                  <option value="guitar">吉他</option>
+                  <option value="piano">鋼琴</option>
+                  <option value="bass">Bass</option>
+                  <option value="drums">鼓與節奏</option>
+                  <option value="other">其他</option>
+                </select>
+              </label>
+              <label>
+                <span>Take 名稱</span>
+                <input id="recordingLabel" type="text" value="手機錄音" maxlength="48" autocomplete="off" />
+              </label>
+            </div>
+            <p>錄音不依賴主機連線；WAV 原檔會先保存在這支裝置，連回 Mac 後才分段同步並做 SHA-256 驗證。</p>
+          </section>
+
+          <section class="pending-section" aria-labelledby="pendingTitle">
+            <div class="section-heading">
+              <div>
+                <span>裝置原檔</span>
+                <h2 id="pendingTitle">待同步錄音</h2>
+              </div>
+              <button id="refreshRecordingsButton" class="quiet-button" type="button">重新整理</button>
+            </div>
+            <div id="recordingList" class="recording-list">
+              <p class="empty-state">目前沒有手機錄音。</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <script src="browser-recorder.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

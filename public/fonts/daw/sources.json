@@ -1,0 +1,26 @@
+[
+  {
+    "file": "noto-sans-tc.ttf",
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/notosanstc/NotoSansTC%5Bwght%5D.ttf",
+    "bytes": 11941968,
+    "sha256": "864727d210d54f2537bbe23b3a839436c3992af72de9322af5270897246bd44f"
+  },
+  {
+    "file": "oxanium.ttf",
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/oxanium/Oxanium%5Bwght%5D.ttf",
+    "bytes": 43536,
+    "sha256": "2ce01d946e1e1ffc8d7eecfffbda8623bedd63eaf811a20488c4b69af45babb0"
+  },
+  {
+    "file": "NotoSansTC-OFL.txt",
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/notosanstc/OFL.txt",
+    "bytes": 4388,
+    "sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9"
+  },
+  {
+    "file": "Oxanium-OFL.txt",
+    "url": "https://raw.githubusercontent.com/google/fonts/main/ofl/oxanium/OFL.txt",
+    "bytes": 4384,
+    "sha256": "fe17c0f2581d71b4e1ea7e636e7f4877c29223e11bb1dd1a871e8c3f2a86336b"
+  }
+]

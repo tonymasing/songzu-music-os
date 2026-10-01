@@ -1,0 +1,7 @@
+.missingAudio { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; padding: 14px 16px; border: 1px solid rgb(180 108 255 / 45%); border-radius: 12px; background: linear-gradient(115deg, rgb(31 18 45 / 48%), rgb(8 17 24 / 38%)); box-shadow: inset 0 1px 0 rgb(255 201 60 / 14%); color: #e7edf5; }
+.missingAudio > div { flex: 1 1 200px; min-width: 0; }
+.missingAudio strong { color: #f3d684; font-size: 12px; }
+.missingAudio p { margin: 4px 0 0; color: #bfbed0; font-size: 12px; line-height: 1.7; }
+.missingAudio a { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 8px 11px; border: 1px solid rgb(61 255 160 / 45%); border-radius: 8px; background: rgb(61 255 160 / 5%); color: #9dfbd0; font-size: 12px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.missingAudio a:hover { border-color: #3dffa0; box-shadow: 0 0 9px rgb(61 255 160 / 15%); }
+.missingAudio a:focus-visible { outline: 2px solid #3dffa0; outline-offset: 3px; }

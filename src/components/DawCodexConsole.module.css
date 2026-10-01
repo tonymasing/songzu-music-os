@@ -1,0 +1,40 @@
+:global(.daw-codex-console) button.issue {
+  display: grid;
+  grid-template-columns: 16px 48px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px 8px;
+  width: 100%;
+  min-width: 0;
+  margin: 8px 0;
+  padding: 10px;
+  border: 1px solid var(--studio-line, rgba(255, 255, 255, 0.18));
+  border-radius: 6px;
+  background: var(--studio-panel, #152019);
+  color: var(--studio-ink, #edf7f0);
+  box-shadow: none;
+  text-align: left;
+  white-space: normal;
+}
+
+.issue strong {
+  min-width: 0;
+  font-size: var(--text-md);
+  overflow-wrap: anywhere;
+}
+
+.issue small {
+  grid-column: 2 / -1;
+  font-size: var(--text-sm);
+  line-height: var(--leading-body);
+  color: var(--studio-muted, rgba(255, 255, 255, 0.72));
+  overflow-wrap: anywhere;
+}
+
+.issue:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+:global(.daw-codex-console) button.issue:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--studio-accent, #54c8aa) 10%, var(--studio-panel, #152019));
+}

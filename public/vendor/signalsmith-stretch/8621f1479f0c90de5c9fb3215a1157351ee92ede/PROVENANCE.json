@@ -1,0 +1,9 @@
+{
+  "upstream": "https://github.com/Signalsmith-Audio/signalsmith-stretch",
+  "commit": "8621f1479f0c90de5c9fb3215a1157351ee92ede",
+  "source": "web/release/SignalsmithStretch.mjs",
+  "license": "MIT, upstream root LICENSE.txt included",
+  "modified": false,
+  "sha256": "d442052f996b87148498dea0d8ac3f929185c99cbccc3ac54bd9037d455d92fc",
+  "runtime": "local static module; embedded WASM; only user-enabled player pitch; no remote requests"
+}

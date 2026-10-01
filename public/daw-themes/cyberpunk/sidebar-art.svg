@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="110" height="180" viewBox="0 0 110 180">
+  <defs>
+    <filter id="cyan" x="-40%" y="-10%" width="180%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="b"/>
+      <feFlood flood-color="#1ee8ff" flood-opacity="0.85"/><feComposite in2="b" operator="in" result="g"/>
+      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="pink" x="-60%" y="-10%" width="220%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2.4" result="b"/>
+      <feFlood flood-color="#ff2d95"/><feComposite in2="b" operator="in" result="g"/>
+      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0a24" stop-opacity="0"/>
+      <stop offset="1" stop-color="#0b0a24" stop-opacity="0.95"/>
+    </linearGradient>
+  </defs>
+  <line x1="102" y1="8" x2="102" y2="172" stroke="#ff2d95" stroke-width="1.6" filter="url(#pink)"/>
+  <text x="84" y="8" writing-mode="vertical-rl" font-family="Hiragino Mincho ProN, Hiragino Sans, serif" font-size="15" font-weight="700" letter-spacing="2" fill="#dffcff" filter="url(#cyan)">音で、生きていく。</text>
+  <g font-family="Hiragino Sans, sans-serif" font-size="6.5" font-weight="600" fill="#ff8fd0" letter-spacing="1.5" filter="url(#pink)">
+    <text x="62" y="170" transform="rotate(-90 62 170)">REC ROOM // 03</text>
+  </g>
+  <g opacity="0.55">
+    <path d="M0 180 V150 h8 v-12 h6 v18 h7 v-30 h9 v26 h6 v-14 h8 v22 h7 v-40 h5 v40 h6 V180 Z" fill="url(#fade)" stroke="#7a6bff" stroke-width="0.6"/>
+    <g fill="#1ee8ff"><rect x="23" y="131" width="2" height="2"/><rect x="23" y="138" width="2" height="2"/><rect x="51" y="118" width="2" height="2"/><rect x="51" y="126" width="2" height="2"/></g>
+    <g fill="#ff5cb8"><rect x="33" y="140" width="2" height="2"/><rect x="45" y="148" width="2" height="2"/></g>
+  </g>
+</svg>

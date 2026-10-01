@@ -1,0 +1,131 @@
+@property --reference-orbit {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes perimeter { to { --reference-orbit: 360deg; } }
+@keyframes atmosphere {
+  0% { transform: translate3d(-4%, -2%, 0) scale(1); opacity: .65; }
+  50% { opacity: 1; }
+  100% { transform: translate3d(4%, 3%, 0) scale(1.06); opacity: .8; }
+}
+@keyframes signal { from { background-position: 160% 0; } to { background-position: -60% 0; } }
+@keyframes iconPulse {
+  from { filter: drop-shadow(0 0 1px rgb(255 201 60 / 20%)); }
+  to { filter: drop-shadow(0 0 7px rgb(255 201 60 / 75%)); }
+}
+@keyframes tagSweep { from { transform: translateX(-130%); } to { transform: translateX(130%); } }
+
+:global(.os-cyber) .card {
+  --reference-motion: paused;
+  --reference-period: 12s;
+  --reference-signal-period: 8s;
+  --reference-light: .72;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+:global(.os-cyber) .card[data-motion="running"] { --reference-motion: running; }
+:global(.os-cyber) .card:has(:global([data-playing="true"])) {
+  --reference-period: 5s;
+  --reference-signal-period: 3s;
+  --reference-light: 1;
+}
+
+/* The moving frame stays within the existing rounded border and cannot intercept clicks. */
+:global(.os-cyber) .card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: 1px solid transparent;
+  border-radius: inherit;
+  background: conic-gradient(from var(--reference-orbit), transparent 0deg 22deg, #ffc93c 63deg, #fff0b0 69deg, transparent 83deg 152deg, #b46cff 185deg, #ebd5ff 192deg, transparent 206deg 270deg, #3dffa0 310deg, #d7ffea 316deg, transparent 330deg 360deg) border-box;
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: var(--reference-light);
+  animation: perimeter var(--reference-period) linear infinite;
+  animation-play-state: var(--reference-motion);
+  pointer-events: none;
+}
+
+/* Slow diffuse light travels underneath the text, without moving the card or its contents. */
+:global(.os-cyber) .card::after {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  z-index: -1;
+  background: radial-gradient(ellipse at 10% 12%, rgb(255 201 60 / 11%), transparent 45%), radial-gradient(ellipse at 72% 35%, rgb(180 108 255 / 14%), transparent 52%), radial-gradient(ellipse at 45% 95%, rgb(61 255 160 / 8%), transparent 44%);
+  animation: atmosphere 14s ease-in-out infinite alternate;
+  animation-play-state: var(--reference-motion);
+  pointer-events: none;
+}
+
+:global(.os-cyber) .card :global(.reference-listening-row) { position: relative; }
+:global(.os-cyber) .card :global(.reference-listening-row)::before,
+:global(.os-cyber) .card :global(.reference-listening-row)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, transparent 0% 38%, #b46cff 46%, #d7ffea 50%, #3dffa0 53%, transparent 63% 100%);
+  background-size: 220% 100%;
+  opacity: var(--reference-light);
+  animation: signal var(--reference-signal-period) linear infinite;
+  animation-play-state: var(--reference-motion);
+  pointer-events: none;
+}
+:global(.os-cyber) .card :global(.reference-listening-row)::before { top: -1px; }
+:global(.os-cyber) .card :global(.reference-listening-row)::after { bottom: -1px; animation-direction: reverse; animation-delay: -2s; }
+
+:global(.os-cyber) .card :global(.reference-note-grid h3) { position: relative; }
+:global(.os-cyber) .card :global(.reference-note-grid h3)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 28px;
+  height: 1px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, transparent, #ffc93c, transparent);
+  background-size: 220% 100%;
+  opacity: .65;
+  animation: signal 7s ease-in-out infinite;
+  animation-play-state: var(--reference-motion);
+  pointer-events: none;
+}
+:global(.os-cyber) .card :global(.reference-note-grid section:nth-child(2) h3)::after { animation-delay: -2s; }
+:global(.os-cyber) .card :global(.reference-note-grid section:nth-child(3) h3)::after { animation-delay: -4s; }
+
+:global(.os-cyber) .card :global(.tag) { position: relative; overflow: hidden; }
+:global(.os-cyber) .card :global(.tag)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(110deg, transparent 20%, rgb(61 255 160 / 22%) 50%, transparent 80%);
+  transform: translateX(-130%);
+  pointer-events: none;
+}
+:global(.os-cyber) .card :global(.tag:hover)::after {
+  animation: tagSweep .9s ease-out;
+  animation-play-state: var(--reference-motion);
+}
+:global(.os-cyber) .card:has(:global([data-playing="true"])) :global(.reference-audio-meta > svg) {
+  animation: iconPulse 1.6s ease-in-out infinite alternate;
+  animation-play-state: var(--reference-motion);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global(.os-cyber) .card::before,
+  :global(.os-cyber) .card::after,
+  :global(.os-cyber) .card :global(.reference-listening-row)::before,
+  :global(.os-cyber) .card :global(.reference-listening-row)::after,
+  :global(.os-cyber) .card :global(.reference-note-grid h3)::after,
+  :global(.os-cyber) .card :global(.tag:hover)::after,
+  :global(.os-cyber) .card:has(:global([data-playing="true"])) :global(.reference-audio-meta > svg) { animation: none; }
+  :global(.os-cyber) .card::after { transform: none; opacity: .7; }
+}

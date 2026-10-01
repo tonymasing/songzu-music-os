@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="頌祖音樂 OS maskable">
+  <rect width="512" height="512" fill="#1f7a68"/>
+  <circle cx="256" cy="256" r="196" fill="#f5f4ee"/>
+  <path d="M298 124v198c0 47-38 79-86 79-43 0-76-25-76-61 0-40 40-66 86-58 13 2 25 7 34 15V176l126-29v58l-84 18z" fill="#20241f"/>
+  <path d="M154 158c26-34 62-56 106-63 44-7 86 3 122 30" fill="none" stroke="#c95f3e" stroke-width="24" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,1638 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Song {
+  id                  String                      @id @default(cuid())
+  title               String
+  workingTitle        String?
+  status              String                      @default("IDEA")
+  bpm                 Int?
+  musicalKey          String?
+  genre               String?
+  subgenre            String?
+  language            String?                     @default("zh-TW")
+  moodJson            String?
+  summary             String?
+  notes               String?
+  createdOn           DateTime?
+  targetReleaseDate   DateTime?
+  createdAt           DateTime                    @default(now())
+  updatedAt           DateTime                    @updatedAt
+  lyricsVersions      LyricsVersion[]
+  audioFiles          AudioFile[]
+  credits             Credit[]
+  releaseTracks       ReleaseTrack[]
+  tasks               Task[]
+  statusHistory       StatusHistory[]
+  aiSuggestions       AiSuggestion[]
+  inspirations        Inspiration[]
+  timelineEvents      TimelineEvent[]
+  promoAssets         PromoAsset[]
+  garageBandLogs      GarageBandOperationLog[]
+  pitchPackSongs      PitchPackSong[]
+  recordingSessions   RecordingSession[]
+  recordingTakes      RecordingTake[]
+  performanceReports  PerformanceAnalysisReport[]
+  performanceIssues   PerformanceIssue[]
+  soundUsages         SongSoundUse[]
+  setupChecklistItems SongSetupChecklistItem[]
+  musicMaterials      MusicMaterial[]
+  generationDrafts    MusicGenerationDraft[]
+  dawProjects         DawProject[]
+  platformPublishJobs PlatformPublishJob[]
+  revenueRecords      RevenueRecord[]
+  songPreview         SongPreview?
+  knowledgeNodes      KnowledgeNode[]
+  intelligenceJobs    AudioIntelligenceJob[]
+  automationRuns      AutomationRun[]
+  catalogMatches      CatalogMatch[]
+  rightsProfile       SongRightsProfile?
+  industryExports     IndustryExport[]
+  metricSnapshots     PlatformMetricSnapshot[]
+  audienceEvents      AudienceEvent[]
+
+  @@index([status])
+  @@index([genre])
+  @@index([updatedAt])
+}
+
+model LyricsVersion {
+  id           String   @id @default(cuid())
+  songId       String
+  versionName  String
+  content      String
+  sectionsJson String?
+  isPrimary    Boolean  @default(false)
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  song         Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([songId])
+}
+
+model AudioFile {
+  id                          String                      @id @default(cuid())
+  songId                      String
+  fileName                    String
+  filePath                    String?
+  storageProvider             String                      @default("local")
+  fileType                    String
+  versionName                 String?
+  fileSizeBytes               Int?
+  sha256                      String?
+  originalFileName            String?
+  mimeType                    String?
+  codecName                   String?
+  containerFormat             String?
+  sourceKind                  String                      @default("external_path")
+  parentAudioFileId           String?
+  originGarageBandLogId       String?
+  qualityStatus               String                      @default("pending")
+  isProtectedOriginal         Boolean                     @default(true)
+  durationSeconds             Float?
+  sampleRate                  Int?
+  bitDepth                    Int?
+  lufs                        Float?
+  truePeak                    Float?
+  isPrimary                   Boolean                     @default(false)
+  archivedAt                  DateTime?
+  notes                       String?
+  createdAt                   DateTime                    @default(now())
+  updatedAt                   DateTime                    @updatedAt
+  song                        Song                        @relation(fields: [songId], references: [id], onDelete: Cascade)
+  comments                    AudioComment[]
+  analyses                    AudioAnalysis[]
+  qualityReports              AudioQualityReport[]
+  parentAudioFile             AudioFile?                  @relation("AudioFileLineage", fields: [parentAudioFileId], references: [id], onDelete: SetNull)
+  childAudioFiles             AudioFile[]                 @relation("AudioFileLineage")
+  originGarageBandLog         GarageBandOperationLog?     @relation(fields: [originGarageBandLogId], references: [id], onDelete: SetNull)
+  referencedRecordingSessions RecordingSession[]          @relation("RecordingSessionReference")
+  recordingTakes              RecordingTake[]             @relation("RecordingTakeAudioFile")
+  performanceReports          PerformanceAnalysisReport[] @relation("PerformanceReportAudioFile")
+  performanceIssues           PerformanceIssue[]          @relation("PerformanceIssueAudioFile")
+  dawClips                    DawClip[]
+  dawScoreDrafts              DawScoreDraft[]
+  previewSources              SongPreview[]               @relation("SongPreviewSource")
+  intelligenceJobs            AudioIntelligenceJob[]
+
+  @@index([songId])
+  @@index([fileType])
+  @@index([qualityStatus])
+  @@index([sha256])
+  @@index([parentAudioFileId])
+  @@index([originGarageBandLogId])
+  @@index([archivedAt])
+}
+
+model AudioQualityReport {
+  id                  String    @id @default(cuid())
+  audioFileId         String
+  sha256              String?
+  fileSizeBytes       Int?
+  formatName          String?
+  containerFormat     String?
+  codecName           String?
+  sampleRate          Int?
+  bitDepth            Int?
+  bitRate             Int?
+  channels            Int?
+  durationSeconds     Float?
+  peak                Float?
+  rms                 Float?
+  integratedLufs      Float?
+  truePeak            Float?
+  clippingSampleCount Int       @default(0)
+  clippingRisk        Boolean   @default(false)
+  lowQualityRisk      Boolean   @default(false)
+  sampleRateMismatch  Boolean   @default(false)
+  bitDepthMismatch    Boolean   @default(false)
+  warningsJson        String?
+  metricsJson         String?
+  verdict             String    @default("warning")
+  analyzer            String    @default("ffmpeg")
+  analyzerVersion     String?
+  errorMessage        String?
+  createdAt           DateTime  @default(now())
+  audioFile           AudioFile @relation(fields: [audioFileId], references: [id], onDelete: Cascade)
+
+  @@index([audioFileId])
+  @@index([verdict])
+  @@index([sha256])
+}
+
+model AudioComment {
+  id               String    @id @default(cuid())
+  audioFileId      String
+  songId           String
+  timestampSeconds Float
+  body             String
+  category         String    @default("其他")
+  status           String    @default("TODO")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  audioFile        AudioFile @relation(fields: [audioFileId], references: [id], onDelete: Cascade)
+
+  @@index([audioFileId])
+  @@index([songId])
+  @@index([status])
+}
+
+model AudioAnalysis {
+  id                   String    @id @default(cuid())
+  audioFileId          String
+  durationSeconds      Float?
+  peak                 Float?
+  rms                  Float?
+  energyJson           String?
+  waveformJson         String?
+  suggestedBpm         Float?
+  suggestedMoodJson    String?
+  suggestedUseCaseJson String?
+  createdAt            DateTime  @default(now())
+  audioFile            AudioFile @relation(fields: [audioFileId], references: [id], onDelete: Cascade)
+
+  @@index([audioFileId])
+}
+
+model RecordingSession {
+  id                   String          @id @default(cuid())
+  songId               String
+  targetInstrument     String
+  detectionMode        String          @default("timing_pitch")
+  targetBpm            Int?
+  targetKey            String?
+  metronomeEnabled     Boolean         @default(true)
+  referenceAudioFileId String?
+  status               String          @default("ACTIVE")
+  notes                String?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  song                 Song            @relation(fields: [songId], references: [id], onDelete: Cascade)
+  referenceAudioFile   AudioFile?      @relation("RecordingSessionReference", fields: [referenceAudioFileId], references: [id], onDelete: SetNull)
+  takes                RecordingTake[]
+
+  @@index([songId])
+  @@index([targetInstrument])
+  @@index([status])
+  @@index([referenceAudioFileId])
+}
+
+model RecordingTake {
+  id           String                      @id @default(cuid())
+  sessionId    String
+  songId       String
+  audioFileId  String?
+  takeNumber   Int                         @default(1)
+  label        String
+  status       String                      @default("RECORDED")
+  recordedAt   DateTime                    @default(now())
+  createdAt    DateTime                    @default(now())
+  updatedAt    DateTime                    @updatedAt
+  session      RecordingSession            @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  song         Song                        @relation(fields: [songId], references: [id], onDelete: Cascade)
+  audioFile    AudioFile?                  @relation("RecordingTakeAudioFile", fields: [audioFileId], references: [id], onDelete: SetNull)
+  reports      PerformanceAnalysisReport[]
+  issues       PerformanceIssue[]
+  dawTakeLanes DawTakeLane[]
+
+  @@index([sessionId])
+  @@index([songId])
+  @@index([audioFileId])
+  @@index([status])
+}
+
+model PerformanceAnalysisReport {
+  id                  String             @id @default(cuid())
+  recordingTakeId     String
+  songId              String
+  audioFileId         String?
+  analyzer            String             @default("browser_web_audio")
+  detectionMode       String             @default("timing_pitch")
+  overallScore        Int
+  timingScore         Int?
+  pitchScore          Int?
+  levelScore          Int?
+  durationSeconds     Float?
+  peak                Float?
+  rms                 Float?
+  tempoDriftMs        Float?
+  pitchDriftCents     Float?
+  summary             String
+  recommendationsJson String?
+  metricsJson         String?
+  createdAt           DateTime           @default(now())
+  recordingTake       RecordingTake      @relation(fields: [recordingTakeId], references: [id], onDelete: Cascade)
+  song                Song               @relation(fields: [songId], references: [id], onDelete: Cascade)
+  audioFile           AudioFile?         @relation("PerformanceReportAudioFile", fields: [audioFileId], references: [id], onDelete: SetNull)
+  issues              PerformanceIssue[]
+
+  @@index([recordingTakeId])
+  @@index([songId])
+  @@index([audioFileId])
+  @@index([overallScore])
+}
+
+model PerformanceIssue {
+  id               String                    @id @default(cuid())
+  reportId         String
+  recordingTakeId  String
+  songId           String
+  audioFileId      String?
+  timestampSeconds Float
+  issueType        String
+  severity         String                    @default("medium")
+  title            String
+  detail           String
+  suggestion       String?
+  measuredValue    Float?
+  expectedValue    Float?
+  createdAt        DateTime                  @default(now())
+  report           PerformanceAnalysisReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  recordingTake    RecordingTake             @relation(fields: [recordingTakeId], references: [id], onDelete: Cascade)
+  song             Song                      @relation(fields: [songId], references: [id], onDelete: Cascade)
+  audioFile        AudioFile?                @relation("PerformanceIssueAudioFile", fields: [audioFileId], references: [id], onDelete: SetNull)
+
+  @@index([reportId])
+  @@index([recordingTakeId])
+  @@index([songId])
+  @@index([audioFileId])
+  @@index([issueType])
+  @@index([severity])
+}
+
+model DawProject {
+  id              String                    @id @default(cuid())
+  songId          String
+  title           String
+  bpm             Int?
+  musicalKey      String?
+  sampleRate      Int                       @default(48000)
+  bitDepth        Int                       @default(24)
+  timeSignature   String                    @default("4/4")
+  status          String                    @default("DRAFT")
+  engineMode      String                    @default("web_fallback")
+  projectJson     String?
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+  song            Song                      @relation(fields: [songId], references: [id], onDelete: Cascade)
+  tracks          DawTrack[]
+  markers         DawMarker[]
+  mixSnapshots    DawMixSnapshot[]
+  scoreDrafts     DawScoreDraft[]
+  latencyProfiles DawLatencyProfile[]
+  healthSnapshots DawEngineHealthSnapshot[]
+  editOperations  DawEditOperation[]
+  routes          DawRoute[]
+  recoveryEntries DawRecoveryEntry[]
+
+  @@index([songId])
+  @@index([status])
+}
+
+model DawTrack {
+  id               String              @id @default(cuid())
+  projectId        String
+  name             String
+  trackType        String              @default("audio")
+  sortOrder        Int                 @default(0)
+  muted            Boolean             @default(false)
+  solo             Boolean             @default(false)
+  armed            Boolean             @default(false)
+  monitoring       Boolean             @default(false)
+  volume           Float               @default(1)
+  pan              Float               @default(0)
+  color            String?
+  effectsJson      String?
+  inputSource      String?
+  outputTarget     String              @default("master")
+  polarityInverted Boolean             @default(false)
+  stereoMode       String              @default("stereo")
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  project          DawProject          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  clips            DawClip[]
+  takeLanes        DawTakeLane[]
+  outgoingRoutes   DawRoute[]          @relation("DawRouteSource")
+  incomingRoutes   DawRoute[]          @relation("DawRouteDestination")
+  automationLanes  DawAutomationLane[]
+
+  @@index([projectId])
+  @@index([trackType])
+}
+
+model DawClip {
+  id                   String    @id @default(cuid())
+  trackId              String
+  audioFileId          String
+  startSeconds         Float     @default(0)
+  offsetSeconds        Float     @default(0)
+  durationSeconds      Float?
+  gain                 Float     @default(1)
+  fadeInSeconds        Float     @default(0)
+  fadeOutSeconds       Float     @default(0)
+  locked               Boolean   @default(false)
+  label                String?
+  color                String?
+  groupId              String?
+  zeroCrossingAdjusted Boolean   @default(false)
+  crossfadeGroupId     String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  track                DawTrack  @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  audioFile            AudioFile @relation(fields: [audioFileId], references: [id], onDelete: Cascade)
+
+  @@index([trackId])
+  @@index([audioFileId])
+  @@index([groupId])
+  @@index([crossfadeGroupId])
+}
+
+model DawTakeLane {
+  id                String               @id @default(cuid())
+  trackId           String
+  recordingTakeId   String
+  laneOrder         Int                  @default(0)
+  compStatus        String               @default("candidate")
+  selectedRangeJson String?
+  notes             String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  track             DawTrack             @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  recordingTake     RecordingTake        @relation(fields: [recordingTakeId], references: [id], onDelete: Cascade)
+  compSegments      DawTakeCompSegment[]
+
+  @@index([trackId])
+  @@index([recordingTakeId])
+  @@index([compStatus])
+}
+
+model DawTakeCompSegment {
+  id                   String      @id @default(cuid())
+  takeLaneId           String
+  sourceStartSeconds   Float
+  sourceEndSeconds     Float
+  timelineStartSeconds Float
+  fadeInSeconds        Float       @default(0.01)
+  fadeOutSeconds       Float       @default(0.01)
+  sortOrder            Int         @default(0)
+  active               Boolean     @default(true)
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  takeLane             DawTakeLane @relation(fields: [takeLaneId], references: [id], onDelete: Cascade)
+
+  @@index([takeLaneId])
+  @@index([timelineStartSeconds])
+}
+
+model DawMarker {
+  id               String     @id @default(cuid())
+  projectId        String
+  markerType       String     @default("idea")
+  label            String
+  timestampSeconds Float      @default(0)
+  color            String?
+  relatedModel     String?
+  relatedId        String?
+  notes            String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  project          DawProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([markerType])
+  @@index([timestampSeconds])
+}
+
+model DawMixSnapshot {
+  id           String     @id @default(cuid())
+  projectId    String
+  title        String
+  snapshotJson String
+  createdAt    DateTime   @default(now())
+  project      DawProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([createdAt])
+}
+
+model DawLatencyProfile {
+  id                  String     @id @default(cuid())
+  projectId           String
+  inputDeviceName     String
+  outputDeviceName    String
+  sampleRate          Int
+  bufferFrames        Int
+  measuredRoundTripMs Float
+  inputLatencyMs      Float?
+  outputLatencyMs     Float?
+  compensationMs      Float
+  method              String     @default("acoustic_loopback")
+  confidence          Float      @default(0)
+  isActive            Boolean    @default(true)
+  measurementJson     String?
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  project             DawProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([inputDeviceName, outputDeviceName])
+  @@index([sampleRate, bufferFrames])
+}
+
+model DawEngineHealthSnapshot {
+  id                   String     @id @default(cuid())
+  projectId            String
+  recordingId          String?
+  status               String     @default("healthy")
+  peak                 Float      @default(0)
+  rms                  Float      @default(0)
+  truePeak             Float?
+  clipping             Boolean    @default(false)
+  xrunCount            Int        @default(0)
+  inputOverflowCount   Int        @default(0)
+  outputUnderflowCount Int        @default(0)
+  diskWriteErrorCount  Int        @default(0)
+  callbackLoad         Float      @default(0)
+  freeDiskBytes        BigInt?
+  detailsJson          String?
+  createdAt            DateTime   @default(now())
+  project              DawProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([recordingId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model DawEditOperation {
+  id            String     @id @default(cuid())
+  projectId     String
+  sequence      Int
+  groupId       String?
+  operationType String
+  entityType    String
+  entityId      String?
+  label         String
+  beforeJson    String?
+  afterJson     String?
+  status        String     @default("APPLIED")
+  createdAt     DateTime   @default(now())
+  undoneAt      DateTime?
+  project       DawProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, sequence])
+  @@index([projectId, status])
+  @@index([groupId])
+}
+
+model DawRoute {
+  id                 String     @id @default(cuid())
+  projectId          String
+  sourceTrackId      String?
+  destinationTrackId String?
+  routeType          String     @default("output")
+  name               String
+  preFader           Boolean    @default(false)
+  gain               Float      @default(1)
+  pan                Float      @default(0)
+  muted              Boolean    @default(false)
+  sortOrder          Int        @default(0)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  project            DawProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sourceTrack        DawTrack?  @relation("DawRouteSource", fields: [sourceTrackId], references: [id], onDelete: Cascade)
+  destinationTrack   DawTrack?  @relation("DawRouteDestination", fields: [destinationTrackId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([sourceTrackId])
+  @@index([destinationTrackId])
+  @@index([routeType])
+}
+
+model DawAutomationLane {
+  id        String               @id @default(cuid())
+  trackId   String
+  parameter String
+  mode      String               @default("read")
+  enabled   Boolean              @default(true)
+  minValue  Float                @default(0)
+  maxValue  Float                @default(1)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  track     DawTrack             @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  points    DawAutomationPoint[]
+
+  @@unique([trackId, parameter])
+  @@index([trackId])
+  @@index([mode])
+}
+
+model DawAutomationPoint {
+  id          String            @id @default(cuid())
+  laneId      String
+  timeSeconds Float
+  value       Float
+  curve       String            @default("linear")
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  lane        DawAutomationLane @relation(fields: [laneId], references: [id], onDelete: Cascade)
+
+  @@index([laneId])
+  @@index([timeSeconds])
+}
+
+model DawRecoveryEntry {
+  id          String     @id @default(cuid())
+  projectId   String
+  sessionId   String
+  sequence    Int
+  eventType   String
+  payloadJson String
+  status      String     @default("PENDING")
+  createdAt   DateTime   @default(now())
+  resolvedAt  DateTime?
+  project     DawProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, sessionId, sequence])
+  @@index([projectId, status])
+  @@index([sessionId])
+  @@index([createdAt])
+}
+
+model DawScoreDraft {
+  id                String     @id @default(cuid())
+  projectId         String
+  sourceAudioFileId String?
+  title             String
+  targetInstrument  String
+  analyzer          String     @default("songzu_local_dsp_v1")
+  status            String     @default("DRAFT")
+  confidence        Float      @default(0)
+  bpm               Int?
+  musicalKey        String?
+  timeSignature     String     @default("4/4")
+  durationSeconds   Float?
+  resultJson        String
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  project           DawProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sourceAudioFile   AudioFile? @relation(fields: [sourceAudioFileId], references: [id], onDelete: SetNull)
+  formalReleases    DawScoreRelease[]
+
+  @@index([projectId])
+  @@index([sourceAudioFileId])
+  @@index([targetInstrument])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model DawScoreRelease {
+  id                       String        @id @default(cuid())
+  scoreDraftId             String
+  revision                 Int
+  formalContentSha256      String
+  contentHashVersion       String        @default("songzu_formal_score_v2")
+  resultJson               String
+  textSha256               String?
+  pdfSha256                String?
+  artifactGeneratedAt      DateTime?
+  releasedAt               DateTime
+  releasedBy               String
+  confirmationEvidenceJson String?
+  createdAt                DateTime      @default(now())
+  scoreDraft               DawScoreDraft @relation(fields: [scoreDraftId], references: [id], onDelete: Cascade)
+
+  @@unique([scoreDraftId, revision])
+  @@index([scoreDraftId, releasedAt])
+  @@index([formalContentSha256])
+}
+
+model Contributor {
+  id             String   @id @default(cuid())
+  name           String
+  email          String?
+  phone          String?
+  ipi            String?
+  isni           String?
+  proAffiliation String?
+  countryCode    String?
+  defaultRoles   String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  credits        Credit[]
+
+  @@index([name])
+}
+
+model Credit {
+  id              String               @id @default(cuid())
+  songId          String
+  contributorId   String
+  role            String
+  splitPercentage Float?
+  publishingSplit Float?
+  masterSplit     Float?
+  creditCategory  String?
+  ownershipType   String?
+  notes           String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  song            Song                 @relation(fields: [songId], references: [id], onDelete: Cascade)
+  contributor     Contributor          @relation(fields: [contributorId], references: [id], onDelete: Cascade)
+  confirmations   CreditConfirmation[]
+
+  @@index([songId])
+  @@index([contributorId])
+}
+
+model CreditConfirmation {
+  id            String    @id @default(cuid())
+  creditId      String
+  token         String    @unique
+  status        String    @default("PENDING")
+  confirmedAt   DateTime?
+  displayName   String?
+  emailSnapshot String?
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  credit        Credit    @relation(fields: [creditId], references: [id], onDelete: Cascade)
+
+  @@index([creditId])
+  @@index([status])
+}
+
+model Release {
+  id              String                 @id @default(cuid())
+  title           String
+  releaseType     String                 @default("SINGLE")
+  releaseDate     DateTime?
+  status          String                 @default("PLANNING")
+  upc             String?
+  coverArtFileId  String?
+  copyrightLine   String?
+  publishingLine  String?
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  tracks          ReleaseTrack[]
+  checklistItems  ReleaseChecklistItem[]
+  songPreviews    SongPreview[]
+  industryExports IndustryExport[]
+
+  @@index([status])
+  @@index([releaseDate])
+}
+
+model ReleaseChecklistItem {
+  id        String   @id @default(cuid())
+  releaseId String
+  title     String
+  category  String
+  status    String   @default("TODO")
+  required  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  release   Release  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+  @@index([releaseId])
+  @@index([status])
+}
+
+model ReleaseTrack {
+  id           String   @id @default(cuid())
+  releaseId    String
+  songId       String
+  trackNumber  Int
+  isrc         String?
+  displayTitle String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  release      Release  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  song         Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([releaseId])
+  @@index([songId])
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  songId      String
+  title       String
+  status      String    @default("TODO")
+  category    String?
+  dueDate     DateTime?
+  sortOrder   Int       @default(0)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  song        Song      @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([songId])
+  @@index([status])
+}
+
+model StatusHistory {
+  id         String   @id @default(cuid())
+  songId     String
+  fromStatus String?
+  toStatus   String
+  note       String?
+  changedAt  DateTime @default(now())
+  song       Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([songId])
+}
+
+model AiSuggestion {
+  id                String    @id @default(cuid())
+  songId            String?
+  suggestionType    String
+  status            String    @default("pending")
+  inputSnapshotJson String?
+  outputPayloadJson String?
+  createdAt         DateTime  @default(now())
+  appliedAt         DateTime?
+  song              Song?     @relation(fields: [songId], references: [id], onDelete: SetNull)
+
+  @@index([songId])
+  @@index([suggestionType])
+}
+
+model AiConversation {
+  id        String          @id @default(cuid())
+  title     String
+  provider  String?
+  model     String?
+  status    String          @default("ACTIVE")
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  messages  AiMessage[]
+  actions   AiAgentAction[]
+
+  @@index([status])
+  @@index([updatedAt])
+}
+
+model AiMessage {
+  id             String         @id @default(cuid())
+  conversationId String
+  role           String
+  content        String
+  provider       String?
+  model          String?
+  metadataJson   String?
+  createdAt      DateTime       @default(now())
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
+model AiAgentAction {
+  id              String         @id @default(cuid())
+  conversationId  String
+  sourceMessageId String?
+  songId          String?
+  actionType      String
+  title           String
+  description     String?
+  payloadJson     String
+  riskLevel       String         @default("low")
+  status          String         @default("PROPOSED")
+  resultJson      String?
+  errorMessage    String?
+  createdAt       DateTime       @default(now())
+  approvedAt      DateTime?
+  executedAt      DateTime?
+  conversation    AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([sourceMessageId])
+  @@index([songId])
+  @@index([status])
+}
+
+model Integration {
+  id             String   @id @default(cuid())
+  provider       String   @unique
+  displayName    String
+  status         String   @default("CONFIGURED")
+  connectionKind String
+  endpoint       String?
+  apiKeyEnv      String?
+  threadUrl      String?
+  threadId       String?
+  projectPath    String?
+  commandPath    String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([provider])
+  @@index([status])
+}
+
+model PlatformConnection {
+  id                  String               @id @default(cuid())
+  provider            String               @unique
+  displayName         String
+  status              String               @default("NOT_CONFIGURED")
+  clientId            String?
+  accountId           String?
+  accountName         String?
+  accountThumbnailUrl String?
+  scopesJson          String?
+  tokenStorage        String               @default("macos_keychain")
+  tokenReference      String?
+  connectedAt         DateTime?
+  tokenExpiresAt      DateTime?
+  lastCheckedAt       DateTime?
+  lastError           String?
+  configJson          String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  publishJobs         PlatformPublishJob[]
+
+  @@index([provider])
+  @@index([status])
+}
+
+model PlatformPublishJob {
+  id               String              @id @default(cuid())
+  songId           String
+  connectionId     String?
+  platform         String              @default("youtube")
+  exportFileName   String
+  title            String
+  description      String?
+  tagsJson         String?
+  categoryId       String              @default("10")
+  privacyStatus    String              @default("private")
+  scheduledAt      DateTime?
+  madeForKids      Boolean             @default(false)
+  status           String              @default("AWAITING_APPROVAL")
+  requiresApproval Boolean             @default(true)
+  approvedAt       DateTime?
+  attempts         Int                 @default(0)
+  progress         Int                 @default(0)
+  uploadSessionUrl String?
+  uploadedBytes    Float               @default(0)
+  fileSizeBytes    Float?
+  platformMediaId  String?
+  platformUrl      String?
+  lastError        String?
+  startedAt        DateTime?
+  completedAt      DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  song             Song                @relation(fields: [songId], references: [id], onDelete: Cascade)
+  connection       PlatformConnection? @relation(fields: [connectionId], references: [id], onDelete: SetNull)
+
+  @@index([songId])
+  @@index([connectionId])
+  @@index([platform])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model MonetizationProfile {
+  id                       String   @id @default(cuid())
+  provider                 String   @unique
+  regionCode               String   @default("TW")
+  yppStatus                String   @default("NOT_APPLIED")
+  subscriberCount          Int      @default(0)
+  publicWatchHours         Float    @default(0)
+  shortsViews90Days        Int      @default(0)
+  validPublicUploads90Days Int      @default(0)
+  fanFundingEnabled        Boolean  @default(false)
+  adsRevenueEnabled        Boolean  @default(false)
+  contentIdStatus          String   @default("NOT_CONFIGURED")
+  distributorName          String?
+  publishingAdmin          String?
+  notes                    String?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@index([provider])
+  @@index([yppStatus])
+}
+
+model RevenueRecord {
+  id                String      @id @default(cuid())
+  songId            String?
+  platform          String
+  revenueType       String
+  periodStart       DateTime
+  periodEnd         DateTime
+  grossAmount       Float
+  currency          String      @default("TWD")
+  source            String      @default("manual")
+  externalReference String?
+  notes             String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  song              Song?       @relation(fields: [songId], references: [id], onDelete: SetNull)
+  claimOrder        ClaimOrder?
+
+  @@index([songId])
+  @@index([platform])
+  @@index([revenueType])
+  @@index([periodStart])
+}
+
+model SongPreview {
+  id                     String          @id @default(cuid())
+  songId                 String          @unique
+  releaseId              String?
+  sourceAudioFileId      String?
+  token                  String          @unique
+  status                 String          @default("DRAFT")
+  title                  String?
+  description            String?
+  previewFileName        String?
+  previewStartSeconds    Float           @default(0)
+  previewDurationSeconds Float           @default(30)
+  sourceSha256           String?
+  previewSha256          String?
+  releaseUrl             String?
+  contactInfo            String?
+  paymentInstructions    String?
+  allowClaims            Boolean         @default(true)
+  playCount              Int             @default(0)
+  publishedAt            DateTime?
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+  song                   Song            @relation(fields: [songId], references: [id], onDelete: Cascade)
+  release                Release?        @relation(fields: [releaseId], references: [id], onDelete: SetNull)
+  sourceAudioFile        AudioFile?      @relation("SongPreviewSource", fields: [sourceAudioFileId], references: [id], onDelete: SetNull)
+  offers                 ClaimOffer[]
+  audienceEvents         AudienceEvent[]
+
+  @@index([releaseId])
+  @@index([sourceAudioFileId])
+  @@index([status])
+  @@index([publishedAt])
+}
+
+model ClaimOffer {
+  id            String       @id @default(cuid())
+  previewId     String
+  offerType     String
+  title         String
+  description   String?
+  price         Int
+  currency      String       @default("TWD")
+  rightsSummary String
+  deliveryDays  Int?
+  maxClaims     Int          @default(1)
+  claimedCount  Int          @default(0)
+  status        String       @default("ACTIVE")
+  sortOrder     Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  preview       SongPreview  @relation(fields: [previewId], references: [id], onDelete: Cascade)
+  orders        ClaimOrder[]
+
+  @@index([previewId])
+  @@index([offerType])
+  @@index([status])
+}
+
+model ClaimOrder {
+  id                   String         @id @default(cuid())
+  offerId              String
+  orderCode            String         @unique
+  customerName         String
+  contactChannel       String
+  contactValue         String
+  message              String?
+  status               String         @default("REQUESTED")
+  amountSnapshot       Int
+  currency             String         @default("TWD")
+  paymentMethod        String         @default("manual")
+  adminNotes           String?
+  termsVersion         String         @default("v1")
+  termsAcceptedAt      DateTime
+  reservationExpiresAt DateTime?
+  paidAt               DateTime?
+  completedAt          DateTime?
+  revenueRecordId      String?        @unique
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  offer                ClaimOffer     @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  revenueRecord        RevenueRecord? @relation(fields: [revenueRecordId], references: [id], onDelete: SetNull)
+
+  @@index([offerId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([reservationExpiresAt])
+}
+
+model PitchPack {
+  id            String          @id @default(cuid())
+  token         String          @unique
+  title         String
+  description   String?
+  allowDownload Boolean         @default(false)
+  showLyrics    Boolean         @default(true)
+  showCredits   Boolean         @default(true)
+  showContact   Boolean         @default(true)
+  contactInfo   String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  songs         PitchPackSong[]
+
+  @@index([token])
+}
+
+model PitchPackSong {
+  id          String    @id @default(cuid())
+  pitchPackId String
+  songId      String
+  sortOrder   Int       @default(0)
+  pitchPack   PitchPack @relation(fields: [pitchPackId], references: [id], onDelete: Cascade)
+  song        Song      @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([pitchPackId])
+  @@index([songId])
+}
+
+model TimelineEvent {
+  id           String   @id @default(cuid())
+  songId       String
+  eventType    String
+  title        String
+  description  String?
+  relatedModel String?
+  relatedId    String?
+  metadataJson String?
+  createdAt    DateTime @default(now())
+  song         Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([songId])
+  @@index([eventType])
+}
+
+model GarageBandOperationLog {
+  id                   String      @id @default(cuid())
+  songId               String?
+  operation            String
+  command              String
+  payloadJson          String?
+  requiresConfirmation Boolean     @default(false)
+  approvalStatus       String      @default("PENDING")
+  resultStatus         String      @default("QUEUED")
+  notes                String?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  song                 Song?       @relation(fields: [songId], references: [id], onDelete: SetNull)
+  exportedAudioFiles   AudioFile[]
+
+  @@index([songId])
+  @@index([approvalStatus])
+  @@index([resultStatus])
+}
+
+model PromoAsset {
+  id        String   @id @default(cuid())
+  songId    String
+  assetType String
+  title     String
+  content   String
+  status    String   @default("DRAFT")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([songId])
+  @@index([assetType])
+}
+
+model SoundLibraryItem {
+  id             String          @id @default(cuid())
+  name           String
+  itemType       String
+  family         String?
+  era            String?
+  source         String?
+  description    String?
+  tagsJson       String?
+  characterJson  String?
+  useCasesJson   String?
+  chainJson      String?
+  garageBandHint String?
+  notes          String?
+  assetPath      String?
+  previewPath    String?
+  sourceUrl      String?
+  licenseName    String?
+  licenseUrl     String?
+  fileSizeBytes  Int?
+  sha256         String?
+  status         String          @default("COLLECTED")
+  favorite       Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  songUsages     SongSoundUse[]
+  musicMaterials MusicMaterial[]
+
+  @@index([itemType])
+  @@index([family])
+  @@index([era])
+  @@index([status])
+  @@index([favorite])
+  @@index([assetPath])
+  @@index([sha256])
+}
+
+model SongSoundUse {
+  id                 String           @id @default(cuid())
+  songId             String
+  soundLibraryItemId String
+  role               String?
+  section            String?
+  status             String           @default("PLANNED")
+  notes              String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  song               Song             @relation(fields: [songId], references: [id], onDelete: Cascade)
+  soundLibraryItem   SoundLibraryItem @relation(fields: [soundLibraryItemId], references: [id], onDelete: Cascade)
+
+  @@index([songId])
+  @@index([soundLibraryItemId])
+  @@index([status])
+}
+
+model SongSetupChecklistItem {
+  id        String   @id @default(cuid())
+  songId    String
+  title     String
+  category  String   @default("錄音準備")
+  status    String   @default("TODO")
+  priority  String   @default("medium")
+  sortOrder Int      @default(0)
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([songId])
+  @@index([status])
+  @@index([category])
+}
+
+model MusicMaterial {
+  id                      String            @id @default(cuid())
+  title                   String
+  materialType            String
+  content                 String
+  summary                 String?
+  source                  String?
+  sourceUrl               String?
+  externalSourceKey       String?           @unique
+  externalAudioPath       String?
+  externalNotePath        String?
+  externalFileName        String?
+  externalFileSizeBytes   Int?
+  externalDurationSeconds Float?
+  externalCodec           String?
+  externalBitRate         Int?
+  externalAudioSha256     String?
+  externalNoteSha256      String?
+  artist                  String?
+  language                String?
+  referenceUsesJson       String?
+  preferenceNotesJson     String?
+  priorityNotesJson       String?
+  styleFeaturesJson       String?
+  suggestedCollection     String?
+  matchStatus             String?
+  importedAt              DateTime?
+  lastScannedAt           DateTime?
+  genre                   String?
+  moodJson                String?
+  tagsJson                String?
+  musicalKey              String?
+  mode                    String?
+  bpm                     Int?
+  meter                   String?
+  sectionRole             String?
+  energy                  Int?
+  relatedSongId           String?
+  relatedSoundId          String?
+  status                  String            @default("COLLECTED")
+  favorite                Boolean           @default(false)
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
+  relatedSong             Song?             @relation(fields: [relatedSongId], references: [id], onDelete: SetNull)
+  relatedSound            SoundLibraryItem? @relation(fields: [relatedSoundId], references: [id], onDelete: SetNull)
+
+  @@index([materialType])
+  @@index([genre])
+  @@index([status])
+  @@index([favorite])
+  @@index([relatedSongId])
+  @@index([relatedSoundId])
+  @@index([externalSourceKey])
+  @@index([artist])
+  @@index([language])
+  @@index([matchStatus])
+  @@index([suggestedCollection])
+}
+
+model PersonalTheoryRule {
+  id           String   @id @default(cuid())
+  title        String
+  ruleType     String
+  scope        String?
+  statement    String
+  examplesJson String?
+  avoidJson    String?
+  tagsJson     String?
+  priority     Int      @default(3)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([ruleType])
+  @@index([isActive])
+  @@index([priority])
+}
+
+model MusicGenerationDraft {
+  id              String   @id @default(cuid())
+  title           String
+  prompt          String
+  songId          String?
+  materialIdsJson String?
+  ruleIdsJson     String?
+  styleTagsJson   String?
+  outputJson      String
+  status          String   @default("DRAFT")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  song            Song?    @relation(fields: [songId], references: [id], onDelete: SetNull)
+
+  @@index([songId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Inspiration {
+  id             String   @id @default(cuid())
+  title          String
+  content        String
+  sourceType     String   @default("text")
+  status         String   @default("INBOX")
+  aiCategory     String?
+  moodJson       String?
+  suggestedTitle String?
+  linkedSongId   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  linkedSong     Song?    @relation(fields: [linkedSongId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([aiCategory])
+  @@index([linkedSongId])
+}
+
+model KnowledgeNode {
+  id             String          @id @default(cuid())
+  entityKey      String          @unique
+  songId         String?
+  nodeType       String
+  label          String
+  summary        String?
+  searchText     String
+  tagsJson       String?
+  attributesJson String?
+  source         String          @default("derived")
+  confidence     Float           @default(1)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  song           Song?           @relation(fields: [songId], references: [id], onDelete: Cascade)
+  outgoingEdges  KnowledgeEdge[] @relation("KnowledgeEdgeSource")
+  incomingEdges  KnowledgeEdge[] @relation("KnowledgeEdgeTarget")
+
+  @@index([songId])
+  @@index([nodeType])
+  @@index([source])
+}
+
+model KnowledgeEdge {
+  id           String        @id @default(cuid())
+  sourceNodeId String
+  targetNodeId String
+  relationType String
+  weight       Float         @default(1)
+  evidenceJson String?
+  createdAt    DateTime      @default(now())
+  sourceNode   KnowledgeNode @relation("KnowledgeEdgeSource", fields: [sourceNodeId], references: [id], onDelete: Cascade)
+  targetNode   KnowledgeNode @relation("KnowledgeEdgeTarget", fields: [targetNodeId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceNodeId, targetNodeId, relationType])
+  @@index([sourceNodeId])
+  @@index([targetNodeId])
+  @@index([relationType])
+}
+
+model AudioIntelligenceJob {
+  id                     String     @id @default(cuid())
+  songId                 String?
+  audioFileId            String?
+  jobType                String
+  target                 String?
+  engine                 String
+  status                 String     @default("QUEUED")
+  progress               Int        @default(0)
+  resultJson             String?
+  warningsJson           String?
+  outputAudioFileIdsJson String?
+  errorMessage           String?
+  startedAt              DateTime?
+  completedAt            DateTime?
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @updatedAt
+  song                   Song?      @relation(fields: [songId], references: [id], onDelete: Cascade)
+  audioFile              AudioFile? @relation(fields: [audioFileId], references: [id], onDelete: SetNull)
+
+  @@index([songId])
+  @@index([audioFileId])
+  @@index([jobType])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model PluginDescriptor {
+  id               String    @id @default(cuid())
+  identifier       String    @unique
+  name             String
+  vendor           String?
+  format           String
+  version          String?
+  filePath         String
+  architecture     String?
+  status           String    @default("DISCOVERED")
+  validationStatus String    @default("UNVALIDATED")
+  capabilitiesJson String?
+  presetsJson      String?
+  quarantined      Boolean   @default(false)
+  lastScannedAt    DateTime  @default(now())
+  lastValidatedAt  DateTime?
+  errorMessage     String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([format])
+  @@index([status])
+  @@index([validationStatus])
+  @@index([quarantined])
+}
+
+model EffectChain {
+  id            String   @id @default(cuid())
+  name          String
+  category      String
+  description   String?
+  pluginIdsJson String?
+  stepsJson     String
+  tagsJson      String?
+  status        String   @default("ACTIVE")
+  favorite      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([category])
+  @@index([status])
+  @@index([favorite])
+}
+
+model AutomationWorkflow {
+  id               String          @id @default(cuid())
+  code             String          @unique
+  name             String
+  description      String?
+  category         String
+  stepsJson        String
+  riskLevel        String          @default("low")
+  requiresApproval Boolean         @default(true)
+  status           String          @default("ACTIVE")
+  version          Int             @default(1)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  runs             AutomationRun[]
+
+  @@index([category])
+  @@index([status])
+}
+
+model AutomationRun {
+  id           String             @id @default(cuid())
+  workflowId   String
+  songId       String?
+  status       String             @default("PROPOSED")
+  previewJson  String?
+  resultJson   String?
+  rollbackJson String?
+  errorMessage String?
+  createdAt    DateTime           @default(now())
+  approvedAt   DateTime?
+  executedAt   DateTime?
+  rolledBackAt DateTime?
+  workflow     AutomationWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  song         Song?              @relation(fields: [songId], references: [id], onDelete: SetNull)
+
+  @@index([workflowId])
+  @@index([songId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model CatalogBrief {
+  id              String         @id @default(cuid())
+  title           String
+  description     String?
+  useCase         String
+  query           String
+  moodsJson       String?
+  instrumentsJson String?
+  genresJson      String?
+  bpmMin          Int?
+  bpmMax          Int?
+  requiredRights  String         @default("one_stop_preferred")
+  allowVocals     Boolean        @default(true)
+  status          String         @default("ACTIVE")
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  matches         CatalogMatch[]
+
+  @@index([useCase])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model CatalogMatch {
+  id           String       @id @default(cuid())
+  briefId      String
+  songId       String
+  score        Int
+  reasonsJson  String?
+  blockersJson String?
+  rightsStatus String       @default("UNKNOWN")
+  status       String       @default("SUGGESTED")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  brief        CatalogBrief @relation(fields: [briefId], references: [id], onDelete: Cascade)
+  song         Song         @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([briefId, songId])
+  @@index([briefId])
+  @@index([songId])
+  @@index([score])
+  @@index([status])
+}
+
+model SongRightsProfile {
+  id                   String   @id @default(cuid())
+  songId               String   @unique
+  alternateTitle       String?
+  iswc                 String?
+  language             String   @default("zh-TW")
+  explicit             Boolean  @default(false)
+  territory            String   @default("Worldwide")
+  publisher            String?
+  proAffiliation       String?
+  masterOwner          String?
+  publishingOwner      String?
+  oneStopClearance     Boolean  @default(false)
+  masterControlled     Boolean  @default(true)
+  publishingControlled Boolean  @default(true)
+  recordingLocation    String?
+  equipmentJson        String?
+  identifiersJson      String?
+  notes                String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  song                 Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([iswc])
+  @@index([oneStopClearance])
+}
+
+model IndustryExport {
+  id               String   @id @default(cuid())
+  songId           String?
+  releaseId        String?
+  format           String
+  profileVersion   String
+  fileName         String
+  filePath         String
+  sha256           String
+  validationStatus String   @default("DRAFT")
+  warningsJson     String?
+  createdAt        DateTime @default(now())
+  song             Song?    @relation(fields: [songId], references: [id], onDelete: SetNull)
+  release          Release? @relation(fields: [releaseId], references: [id], onDelete: SetNull)
+
+  @@index([songId])
+  @@index([releaseId])
+  @@index([format])
+  @@index([createdAt])
+}
+
+model PlatformMetricSnapshot {
+  id                  String   @id @default(cuid())
+  songId              String?
+  provider            String
+  externalMediaId     String?
+  periodStart         DateTime
+  periodEnd           DateTime
+  views               Int      @default(0)
+  engagedViews        Int      @default(0)
+  watchMinutes        Float    @default(0)
+  averageViewDuration Float    @default(0)
+  likes               Int      @default(0)
+  comments            Int      @default(0)
+  shares              Int      @default(0)
+  subscribersGained   Int      @default(0)
+  estimatedRevenue    Float    @default(0)
+  currency            String   @default("TWD")
+  metricsJson         String?
+  source              String   @default("manual")
+  createdAt           DateTime @default(now())
+  song                Song?    @relation(fields: [songId], references: [id], onDelete: SetNull)
+
+  @@index([songId])
+  @@index([provider])
+  @@index([periodStart])
+  @@index([createdAt])
+}
+
+model AudienceEvent {
+  id           String       @id @default(cuid())
+  songId       String
+  previewId    String?
+  eventType    String
+  source       String       @default("direct")
+  sessionHash  String?
+  metadataJson String?
+  occurredAt   DateTime     @default(now())
+  song         Song         @relation(fields: [songId], references: [id], onDelete: Cascade)
+  preview      SongPreview? @relation(fields: [previewId], references: [id], onDelete: SetNull)
+
+  @@index([songId])
+  @@index([previewId])
+  @@index([eventType])
+  @@index([occurredAt])
+}

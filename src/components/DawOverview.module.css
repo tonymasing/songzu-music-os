@@ -1,0 +1,50 @@
+.workspace { min-width: 0; color: #eef0ee; letter-spacing: var(--tracking-none); font-family: var(--font-ui); font-synthesis: none; }
+.header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 0 18px; border-bottom: 1px solid rgb(255 255 255 / 10%); }
+.header > div { min-width: 0; }
+.header h1 { margin: 0; font-size: var(--text-display); line-height: var(--leading-label); letter-spacing: var(--tracking-none); }
+.header p { margin: 4px 0 0; color: #a7b2b4; font-size: var(--text-body); line-height: var(--leading-prose); }
+
+.stats { display: flex; flex-wrap: wrap; gap: 6px 24px; margin: 0; padding: 14px 0; border-bottom: 1px solid rgb(255 255 255 / 10%); }
+.stats div { display: flex; align-items: baseline; gap: 6px; }
+.stats dt { order: 2; color: #a7b2b4; font-size: var(--text-md); }
+.stats dd { order: 1; margin: 0; font-size: var(--text-xl); font-weight: var(--weight-bold); font-variant-numeric: tabular-nums; }
+
+.list { margin: 0; padding: 0; list-style: none; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 4px; border-bottom: 1px solid rgb(255 255 255 / 8%); }
+.row:hover { background: rgb(255 255 255 / 3%); }
+.info { min-width: 0; }
+.titleLine { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.titleLine h2 { margin: 0; font-size: var(--text-title); line-height: var(--leading-body); letter-spacing: var(--tracking-none); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.meta { display: flex; flex-wrap: wrap; gap: 2px 0; margin: 3px 0 0; color: #a7b2b4; font-size: var(--text-md); line-height: var(--leading-prose); font-variant-numeric: tabular-nums; }
+.meta span + span::before { content: "·"; margin: 0 7px; color: #5d6769; }
+
+.status { flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px; color: #a7b2b4; font-size: var(--text-sm); font-weight: var(--weight-semibold); white-space: nowrap; }
+.status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.ready { color: #76d5b9; }
+.warn { color: #e9b86f; }
+
+.actions { display: flex; align-items: center; flex-shrink: 0; gap: 6px; }
+.button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 30px; padding: 0 11px; border: 1px solid rgb(255 255 255 / 16%); border-radius: var(--os-radius-control, 6px); background: transparent; color: #d7dcdb; font: inherit; font-size: var(--text-md); font-weight: var(--weight-semibold); line-height: var(--leading-solid); text-decoration: none; white-space: nowrap; cursor: pointer; }
+.button:hover { border-color: rgb(255 255 255 / 30%); color: #fff; }
+.button:focus-visible { outline: 2px solid #e9b86f; outline-offset: 2px; }
+.button:disabled { opacity: 0.55; cursor: default; }
+.primary { border-color: transparent; background: #c8663a; color: #fff; }
+.primary:hover { border-color: transparent; background: #d8744a; }
+
+@media (max-width: 560px) {
+  .header { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .row { align-items: flex-start; flex-direction: column; gap: 10px; }
+}
+
+/* Shared DAW title and instrument-number roles; original layout retained. */
+.header h1 { font-family: var(--font-display); font-weight: var(--weight-black); letter-spacing: var(--tracking-display); transform: scaleX(var(--type-display-condense)) skewX(var(--type-display-slant)); transform-origin: left center; }
+.titleLine h2 { font-family: var(--font-display); font-weight: var(--weight-extrabold); }
+.stats dd, .meta { font-family: var(--font-number); font-variant-numeric: tabular-nums lining-nums; }
+
+/* OS 賽博 visual mode: gold primary actions, purple lines, green hover. */
+:global(.os-cyber) .header, :global(.os-cyber) .stats { border-bottom-color: rgb(180 108 255 / 35%); }
+:global(.os-cyber) .row { border-bottom-color: rgb(180 108 255 / 18%); }
+:global(.os-cyber) .row:hover { background: rgb(61 255 160 / 6%); }
+:global(.os-cyber) .button { border-color: rgb(61 255 160 / 55%); color: #eafff4; box-shadow: 0 0 8px rgb(61 255 160 / 22%); }
+:global(.os-cyber) .primary, :global(.os-cyber) .primary:hover { border: 1.5px solid #ffc93c; background: linear-gradient(135deg, rgb(255 201 60 / 26%), rgb(180 108 255 / 14%)), rgb(24 12 6 / 86%); color: #fff6d8; box-shadow: inset 0 0 10px rgb(255 201 60 / 35%), 0 0 10px rgb(255 201 60 / 60%); }
+:global(.os-cyber) .button:focus-visible { outline-color: #3dffa0; }

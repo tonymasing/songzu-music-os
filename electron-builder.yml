@@ -1,0 +1,99 @@
+appId: local.songzu.music-os.electron
+productName: 頌祖音樂 OS
+copyright: Copyright © 2026 Songzu
+
+directories:
+  output: ../dist-electron
+  buildResources: ../build
+
+files:
+  - electron/**/*
+  - "!electron/**/._*"
+  - "!electron/**/.DS_Store"
+  - package.json
+
+afterPack: ./.electron-package/sign-macos-share.cjs
+
+asar: true
+npmRebuild: false
+electronVersion: 43.2.0
+electronLanguages:
+  - en
+  - zh-TW
+
+extraResources:
+  - from: ../scripts/storage-migration-worker.mjs
+    to: storage-worker/storage-migration-worker.mjs
+  - from: ../scripts/songzu-connect
+    to: songzu-connect
+    filter:
+      - "**/*.mjs"
+  - from: ../mobile-shell
+    to: mobile-shell
+    filter:
+      - "**/*"
+      - "!scores/**/*"
+      - "!**/._*"
+      - "!**/.DS_Store"
+  - from: ../.next/standalone
+    to: .next/standalone
+    filter:
+      - "**/*"
+      - "!**/._*"
+      - "!**/.DS_Store"
+      - "!dist-electron/**/*"
+      - "!dist-mobile/**/*"
+      - "!android/**/*"
+      - "!ios/**/*"
+      - "!mobile-shell/**/*"
+      - "!native/**/*"
+      - "!output/**/*"
+      - "!src/**/*"
+      - "!uploads/**/*"
+      - "!exports/**/*"
+      - "!docs/**/*"
+      - "!.desktop-app/**/*"
+      - "!.electron-app/**/*"
+      - "!.electron-package/**/*"
+      - "!**/.env*"
+      - "!security/**/*"
+      - "!backups/**/*"
+      - "!.cache/**/*"
+      - "!analysis-cache/**/*"
+      - "!prisma/dev.db"
+      - "!prisma/dev.db-*"
+      - "!node_modules/**/*"
+  - from: ../.next/standalone/node_modules
+    to: .next/standalone/node_modules
+    filter:
+      - "**/*"
+      - "!**/._*"
+      - "!**/.DS_Store"
+  - from: ../electron-baseline/prisma/dev.db
+    to: electron-baseline/prisma/dev.db
+  - from: ../native/songzu-daw-core/target/release/songzu-daw-core
+    to: native/songzu-daw-core/target/release/songzu-daw-core
+
+mac:
+  icon: icon.png
+  category: public.app-category.music
+  extendInfo:
+    NSMicrophoneUsageDescription: 頌祖音樂 OS 需要麥克風權限，才能把你的演唱與樂器錄成受保護的本機 WAV 原檔。
+  target:
+    - target: dmg
+      arch:
+        - arm64
+  identity: null
+  hardenedRuntime: false
+  gatekeeperAssess: false
+
+dmg:
+  artifactName: 頌祖音樂 OS-${version}-${arch}.${ext}
+  title: 頌祖音樂 OS
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
