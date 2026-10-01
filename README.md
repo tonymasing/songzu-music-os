@@ -12,7 +12,7 @@
 
 [下載 Mac M 系列安裝包](https://github.com/tonymasing/songzu-music-os/releases/download/v0.32.16.001/Songzu-Music-OS-0.32.16-arm64.dmg) · [完整下載頁](https://github.com/tonymasing/songzu-music-os/releases/tag/v0.32.16.001)
 
-這是私人分享倉庫，需要使用有存取權限的 GitHub 帳號登入。
+本專案已公開，朋友不需要 GitHub 帳號或邀請即可查看說明、下載安裝包。
 
 在此專案的 **Releases** 下載 `Songzu-Music-OS-0.32.16-arm64.dmg`，開啟後把 App 拖到「應用程式」。打開「頌祖音樂 OS」即會啟動內建的本機服務，不必啟動開發預覽或安裝 Node.js。
 
