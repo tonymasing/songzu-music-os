@@ -1,6 +1,6 @@
 {
   "name": "ai-music-os",
-  "version": "0.32.16",
+  "version": "0.32.17",
   "private": true,
   "description": "本機優先的 AI 音樂創作、作品資料庫、音色資料庫與發行工作台。",
   "author": "Songzu",

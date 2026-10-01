@@ -8,6 +8,7 @@ import type { MusicMaterial, Prisma } from "@prisma/client";
 import { parseJsonValue, toIso } from "@/lib/music";
 import { prisma } from "@/lib/prisma";
 import { appPath } from "@/lib/paths";
+import { bundledReferenceAudioPath, bundledReferenceCount, bundledReferenceUris, bundledReferenceSource, ensureBundledReferences } from "@/lib/bundled-references";
 
 const execFileAsync = promisify(execFile);
 const nodeFs = process.getBuiltinModule("fs") as typeof import("node:fs");
@@ -253,10 +254,17 @@ async function sourceSnapshot(paths: string[]) {
   return Object.fromEntries(rows);
 }
 
+async function referenceEntries(path: string) {
+  return nodeFsPromises.readdir(/* turbopackIgnore: true */ path, { withFileTypes: true }).catch((error: NodeJS.ErrnoException) => {
+    if (error.code === "ENOENT") return [];
+    throw error;
+  });
+}
+
 export async function scanHermesReferenceLibrary() {
   const [audioEntries, noteEntries] = await Promise.all([
-    nodeFsPromises.readdir(/* turbopackIgnore: true */ hermesInboxPath, { withFileTypes: true }),
-    nodeFsPromises.readdir(/* turbopackIgnore: true */ hermesNotesPath, { withFileTypes: true })
+    referenceEntries(hermesInboxPath),
+    referenceEntries(hermesNotesPath)
   ]);
   const audios = audioEntries
     .filter((entry) => entry.isFile() && audioExtensions.has(extname(entry.name).toLowerCase()))
@@ -277,6 +285,7 @@ export async function scanHermesReferenceLibrary() {
 }
 
 export async function importHermesReferenceLibrary() {
+  await ensureBundledReferences();
   const scan = await scanHermesReferenceLibrary();
   const sourcePaths = [...scan.audios.map((audio) => audio.path), ...scan.notes.map((note) => note.path)];
   const before = await sourceSnapshot(sourcePaths);
@@ -290,7 +299,9 @@ export async function importHermesReferenceLibrary() {
     importedKeys.push(key);
     const note = candidate.note;
     const audio = candidate.audio;
-    const existing = await prisma.musicMaterial.findUnique({ where: { externalSourceKey: key }, select: { id: true } });
+    const existing = await prisma.musicMaterial.findUnique({ where: { externalSourceKey: key }, select: { id: true, externalAudioPath: true } });
+    // A same-title loose note or duplicate import must not replace shipped audio.
+    if (existing && bundledReferenceAudioPath(existing.externalAudioPath)) continue;
     const audioInfo = audio ? await nodeFsPromises.stat(/* turbopackIgnore: true */ audio.path) : null;
     const audioProbe = audio ? await probeAudio(audio.path) : { durationSeconds: null, codec: null, bitRate: null };
     const audioHash = audio ? await fileSha256(audio.path) : null;
@@ -357,7 +368,7 @@ export async function importHermesReferenceLibrary() {
 
   const offline = importedKeys.length
     ? await prisma.musicMaterial.updateMany({
-        where: { materialType: "style_reference", externalSourceKey: { notIn: importedKeys } },
+        where: { materialType: "style_reference", externalSourceKey: { notIn: importedKeys }, OR: [{ externalAudioPath: null }, { externalAudioPath: { notIn: bundledReferenceUris } }] },
         data: { matchStatus: "OFFLINE", lastScannedAt: now }
       })
     : { count: 0 };
@@ -394,6 +405,8 @@ function pathInsideRoot(path: string) {
 }
 
 export function assertReferenceAudioPath(path: string | null) {
+  const bundled = bundledReferenceAudioPath(path);
+  if (bundled) return bundled;
   if (!path || !pathInsideRoot(path) || !audioExtensions.has(extname(path).toLowerCase())) {
     throw new Error("參考音檔路徑不在允許的唯讀資料庫中。");
   }
@@ -424,6 +437,7 @@ export async function toMusicReferenceDto(item: ReferenceRecord) {
     tags: parseJsonValue<string[]>(item.tagsJson, []),
     referenceUses: parseJsonValue<string[]>(item.referenceUsesJson, []),
     preferenceNotes: parseJsonValue<string[]>(item.preferenceNotesJson, []),
+    notesAuthor: item.source === bundledReferenceSource ? "Tony" : null,
     priorityNotes: parseJsonValue<string[]>(item.priorityNotesJson, []),
     styleFeatures: parseJsonValue<string[]>(item.styleFeaturesJson, []),
     suggestedCollection: item.suggestedCollection,
@@ -449,6 +463,7 @@ export async function toMusicReferenceDto(item: ReferenceRecord) {
 }
 
 export async function getMusicReferences() {
+  await ensureBundledReferences();
   const rows = await prisma.musicMaterial.findMany({
     where: { materialType: "style_reference" },
     include: referenceInclude,
@@ -458,20 +473,24 @@ export async function getMusicReferences() {
 }
 
 export async function referenceLibraryHealth() {
+  await ensureBundledReferences();
+  const bundledCount = await bundledReferenceCount();
   try {
     const scan = await scanHermesReferenceLibrary();
     return {
       available: true,
+      bundledCount,
       root: hermesMusicDbRoot,
-      audioCount: scan.audios.length,
-      noteCount: scan.notes.length,
-      matchedCount: scan.candidates.filter((item) => item.matchStatus === "MATCHED").length,
+      audioCount: scan.audios.length + bundledCount,
+      noteCount: scan.notes.length + bundledCount,
+      matchedCount: scan.candidates.filter((item) => item.matchStatus === "MATCHED").length + bundledCount,
       noteOnlyCount: scan.candidates.filter((item) => item.matchStatus === "NOTE_ONLY").length,
       audioOnlyCount: scan.candidates.filter((item) => item.matchStatus === "AUDIO_ONLY").length
     };
   } catch (error) {
     return {
       available: false,
+      bundledCount,
       root: hermesMusicDbRoot,
       audioCount: 0,
       noteCount: 0,

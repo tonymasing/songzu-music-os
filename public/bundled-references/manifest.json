@@ -1,0 +1,55 @@
+[
+  {
+    "id": "city-pop",
+    "key": "hermes:50d6c39dca654e327a486c99",
+    "title": "pop city－call of silence",
+    "fileName": "pop city - call of silence.mp3",
+    "audio": "city-pop.mp3",
+    "note": "city-pop.md",
+    "genre": "City Pop",
+    "collection": "03_City_Pop",
+    "likes": [
+      "原有曲風該有的氛圍",
+      "中間間奏的神來一筆",
+      "鼓的節奏搭配貝斯強烈的抨擊感"
+    ],
+    "referenceUses": [
+      "貝斯運用編程（編曲／節奏）"
+    ],
+    "priorities": [
+      "AI 創作的豐富感很重",
+      "自行創作要特別注意不要過多的組織編程"
+    ],
+    "durationSeconds": 142.879979,
+    "bitRate": 184767,
+    "sizeBytes": 3299948,
+    "audioSha256": "0b790237f91e14b07f8f82fcc3c9197942fb63b66ef6e5a04c17a771a533cfb2",
+    "noteSha256": "c4e9b92f618d345cb1f258aca655cb7eb978f359fd8b26fd9b0e562aebaf09bc"
+  },
+  {
+    "id": "reggae-rocksteady",
+    "key": "hermes:2df1034d8befa4a62cab55a2",
+    "title": "雷鬼版－call of silence",
+    "fileName": "雷鬼版 - call of silence.mp3",
+    "audio": "reggae-rocksteady.mp3",
+    "note": "reggae-rocksteady.md",
+    "genre": "雷鬼（Reggae） / Rocksteady",
+    "collection": "04_Reggae_Rocksteady",
+    "likes": [
+      "雷鬼（Reggae）曲風中的 Rocksteady 風格",
+      "Rocksteady 的節奏",
+      "演唱也轉化成雷鬼（Reggae）的韻律感"
+    ],
+    "referenceUses": [
+      "改編曲風（編曲／節奏）"
+    ],
+    "priorities": [
+      "雷鬼（Reggae）元素"
+    ],
+    "durationSeconds": 109.002667,
+    "bitRate": 320159,
+    "sizeBytes": 4362284,
+    "audioSha256": "df1656a7ecb6e4041eaabd4ccef3627808e28ac517165997e70c45450720f198",
+    "noteSha256": "054234392e76a349d4f569afde37f2db0becf46d371b1261b69397db26030534"
+  }
+]

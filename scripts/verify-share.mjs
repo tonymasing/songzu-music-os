@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readdir, readFile, lstat } from "node:fs/promises";
 import { join, resolve, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -7,6 +8,9 @@ import { DatabaseSync } from "node:sqlite";
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const roots = ["src", "electron", "prisma", "public", "mobile-shell", "scripts", "native", "docs", "build", ".github"];
 const ignored = new Set(["target", "node_modules", ".git", "__pycache__", "sound-assets"]);
+const bundled = JSON.parse(await readFile(join(root, "public/bundled-references/manifest.json"), "utf8"));
+assert.deepEqual(bundled.map(item => item.id).sort(), ["city-pop", "reggae-rocksteady"]);
+const audioAllowlist = new Map(bundled.map(item => [`public/bundled-references/${item.audio}`, item.audioSha256]));
 const failures = [];
 let count = 0;
 async function walk(dir) {
@@ -25,6 +29,10 @@ async function inspect(path) {
   count++;
   if ((/(^|\/)\.env(?:\..*)?$/.test(name) || /^(?:security|uploads|exports|backups|mobile-shell\/scores)(?:\/|$)/.test(name)) && name !== ".env.example") failures.push({file:name, reason:"private path"});
   const buffer = await readFile(path);
+  if (/\.(?:mp3|m4a|m4r|wav|flac|aac|ogg|aiff?)$/i.test(name)) {
+    const digest = createHash("sha256").update(buffer).digest("hex");
+    if (audioAllowlist.get(name) !== digest) failures.push({file:name, reason:"audio outside authorized two-file manifest"});
+  }
   if (buffer.includes(0)) return;
   const source = buffer.toString("utf8");
   const checks = [

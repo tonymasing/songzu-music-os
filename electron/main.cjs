@@ -777,6 +777,31 @@ async function runSmokeTest() {
         console.error("electron-smoke-data-api-failed /api/songs");
       }
       if (ready) {
+        await smokeWindow.loadURL(`${baseUrl}/music-db/references`);
+        const referencesReady = await smokeWindow.webContents.executeJavaScript(`(async () => {
+          const response = await fetch('/api/music-references');
+          if (!response.ok) return false;
+          const { items } = await response.json();
+          const bundled = items.filter(item => item.notesAuthor === 'Tony');
+          if (bundled.length !== 2) return false;
+          for (const item of bundled) {
+            if (!item.audioAvailable || item.matchStatus !== 'MATCHED' || !item.preferenceNotes.length || !item.referenceUses.length || !item.priorityNotes.length) return false;
+            const range = await fetch(item.audioUrl, { headers: { Range: 'bytes=0-1023' } });
+            if (range.status !== 206 || (await range.arrayBuffer()).byteLength !== 1024) return false;
+            const audio = new Audio(item.audioUrl);
+            audio.muted = true;
+            await audio.play();
+            await new Promise(resolve => setTimeout(resolve, 250));
+            const playing = !audio.paused && audio.currentTime > 0;
+            audio.pause(); audio.removeAttribute('src'); audio.load();
+            if (!playing) return false;
+          }
+          return true;
+        })()`, true);
+        if (!referencesReady) throw new Error("bundled reference playback smoke failed");
+        console.log("electron-smoke-bundled-references 2 matched/playable");
+      }
+      if (ready) {
         await smokeWindow.loadURL(`${baseUrl}/daw`);
         const routeHasError = await smokeWindow.webContents.executeJavaScript(
           `document.body.innerText.includes("這個區塊暫時沒有載入成功")`,

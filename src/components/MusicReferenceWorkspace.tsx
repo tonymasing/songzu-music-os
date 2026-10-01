@@ -22,6 +22,7 @@ import { useMemo, useState } from "react";
 import type { MusicReferenceDto } from "@/lib/reference-library";
 
 type ReferenceHealth = {
+  bundledCount: number;
   available: boolean;
   root: string;
   audioCount: number;
@@ -182,7 +183,7 @@ export function MusicReferenceWorkspace({
               音樂資料庫
             </Link>
             <span className={health.available ? "tag green" : "tag danger"}>
-              {health.available ? "外接資料庫已連線" : "外接資料庫離線"}
+              {health.available ? (health.bundledCount ? `內建 ${health.bundledCount} 首參考曲` : "資料庫已連線") : "外部來源離線"}
             </span>
           </div>
           <span className="eyebrow">我的音樂風格資料庫</span>
@@ -314,7 +315,7 @@ export function MusicReferenceWorkspace({
 
                 <div className="reference-note-grid">
                   <section>
-                    <h3>我喜歡</h3>
+                    <h3>{item.notesAuthor ? `${item.notesAuthor} 喜歡` : "我喜歡"}</h3>
                     {item.preferenceNotes.length ? item.preferenceNotes.map((note) => <p key={note}>{note}</p>) : <p className="muted">尚未記錄偏好。</p>}
                   </section>
                   <section>
