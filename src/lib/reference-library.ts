@@ -220,7 +220,7 @@ function energyFromNote(note: ParsedNote | null) {
   const content = note ? [...note.likes, ...note.styleFeatures].join(" ").toLowerCase() : "";
   if (/爆發|高能量|衝|anthem|強烈|帶動/.test(content)) return 8;
   if (/內斂|淡淡|收斂|安靜|ballad|抒情/.test(content)) return 4;
-  return note ? 6 : null;
+  return null; // No energy label without an explicit basis in the note.
 }
 
 function contentFromNote(note: ParsedNote | null) {

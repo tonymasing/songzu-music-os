@@ -2,7 +2,7 @@
 
 本機優先的音樂創作工作台。整合作品、錄音、參考音樂、偏好筆記與資料維護，使用金／紫／綠的賽博龐克介面。
 
-分享版 **0.32.17**。首次進入參考資料庫即有兩首隨附 MP3 與 Tony 的分類筆記：City Pop 與 Reggae / Rocksteady 版本的 Call of Silence。其他個人歌曲、錄音、樂譜與私人設定均不包含。
+分享版 **0.32.18**。首次進入參考資料庫即有兩首隨附 MP3 與 Tony 的分類筆記：City Pop 與 Reggae / Rocksteady 版本的 Call of Silence。其他個人歌曲、錄音、樂譜與私人設定均不包含。
 
 ![賽博龐克音樂資料庫與播放器](docs/images/music-library.png)
 
@@ -10,11 +10,11 @@
 
 ## 我只想安裝使用
 
-[下載 Mac M 系列安裝包](https://github.com/tonymasing/songzu-music-os/releases/download/v0.32.17.001/Songzu-Music-OS-0.32.17-arm64.dmg) · [完整下載頁](https://github.com/tonymasing/songzu-music-os/releases/tag/v0.32.17.001)
+[下載 Mac M 系列安裝包](https://github.com/tonymasing/songzu-music-os/releases/download/v0.32.18.001/Songzu-Music-OS-0.32.18-arm64.dmg) · [完整下載頁](https://github.com/tonymasing/songzu-music-os/releases/tag/v0.32.18.001)
 
 本專案已公開，朋友不需要 GitHub 帳號或邀請即可查看說明、下載安裝包。
 
-在此專案的 **Releases** 下載 `Songzu-Music-OS-0.32.17-arm64.dmg`，開啟後把 App 拖到「應用程式」。打開「頌祖音樂 OS」即會啟動內建的本機服務，不必啟動開發預覽或安裝 Node.js。
+在此專案的 **Releases** 下載 `Songzu-Music-OS-0.32.18-arm64.dmg`，開啟後把 App 拖到「應用程式」。打開「頌祖音樂 OS」即會啟動內建的本機服務，不必啟動開發預覽或安裝 Node.js。
 
 目前安裝包適用 **Apple Silicon Mac（M 系列）**。Intel Mac、Windows 尚無已驗證的安裝包。
 

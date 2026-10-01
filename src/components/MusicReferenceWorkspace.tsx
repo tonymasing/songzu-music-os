@@ -9,7 +9,8 @@ import {
   CheckCircle2,
   CircleAlert,
   ExternalLink,
-  Disc3,
+  ChevronDown,
+  Film,
   FolderLock,
   Headphones,
   RefreshCw,
@@ -287,24 +288,30 @@ export function MusicReferenceWorkspace({
                   </button>
                 </div>
 
-                <div className="reference-listening-row">
-                  <div className="reference-audio-meta">
-                    <span className="reference-audio-badge" aria-hidden="true">
-                      <Disc3 size={20} />
-                    </span>
-                    <span>
-                      <strong>{item.externalFileName || "尚未加入音檔"}</strong>
-                      {item.audioUrl ? (
-                        <span className="reference-audio-stats">
-                          <em className="is-duration">音樂長度 <b>{formatDuration(item.externalDurationSeconds)}</b></em>
-                          <em>{formatBytes(item.externalFileSizeBytes)}</em>
-                          <em>{item.externalCodec?.toUpperCase() || "待分析"}</em>
-                        </span>
-                      ) : "歌曲筆記已保留"}
-                    </span>
-                  </div>
+                <div className={`${styles.listeningRow} reference-listening-row`}>
                   {item.audioUrl ? (
-                    <CyberAudioPlayer controls preload="metadata" src={item.audioUrl} aria-label={`試聽 ${item.title}`} />
+                    <CyberAudioPlayer
+                      controls
+                      preload="metadata"
+                      src={item.audioUrl}
+                      aria-label={`試聽 ${item.title}`}
+                      visual={
+                        <div className={styles.mvViewport} role="region" aria-label={`${item.title} MV 影片區`}>
+                          <span className={styles.mvLabel}>MV <span>SCREEN</span></span>
+                          <div className={styles.mvPlaceholder}>
+                            <Film size={28} aria-hidden="true" />
+                            <span>MV 影片區</span>
+                            <small>尚未加入影片</small>
+                          </div>
+                        </div>
+                      }
+                      trackInfo={{
+                        fileName: item.externalFileName || item.title,
+                        duration: formatDuration(item.externalDurationSeconds),
+                        size: formatBytes(item.externalFileSizeBytes),
+                        format: item.externalCodec?.toUpperCase() || "待分析"
+                      }}
+                    />
                   ) : (
                     <div className={styles.missingAudio}>
                       <div><strong>{item.matchStatus === "OFFLINE" ? "音檔來源目前離線" : "尚未找到對應音檔"}</strong><p>{item.matchStatus === "OFFLINE" ? "重新連接音檔所在磁碟後，即可再試播放。" : "目前只有歌曲筆記；加入音檔並重新掃描後，即可在這裡播放。"}</p></div>
@@ -313,6 +320,14 @@ export function MusicReferenceWorkspace({
                   )}
                 </div>
 
+                <details className={styles.noteDisclosure}>
+                  <summary>
+                    <ChevronDown size={16} aria-hidden="true" />
+                    <span className={styles.whenClosed}>展開筆記與分類</span>
+                    <span className={styles.whenOpen}>收納筆記與分類</span>
+                    <small>喜歡 · 用途 · 注意事項</small>
+                  </summary>
+                  <div className={styles.disclosureBody}>
                 <div className="reference-note-grid">
                   <section>
                     <h3>{item.notesAuthor ? `${item.notesAuthor} 喜歡` : "我喜歡"}</h3>
@@ -349,6 +364,8 @@ export function MusicReferenceWorkspace({
                     </details>
                   </div>
                 </div>
+                  </div>
+                </details>
               </ReferenceMotionCard>
             );
           })}

@@ -1,13 +1,17 @@
 "use client";
 
-import { AudioLines, Download, Pause, Play, Repeat2, Settings, Volume2, VolumeX, X } from "lucide-react";
-import { forwardRef, useEffect, useId, useImperativeHandle, useRef, useState, type AudioHTMLAttributes, type CSSProperties } from "react";
+import { AudioLines, Disc3, Download, Pause, Play, Repeat2, Settings, Volume2, VolumeX, X } from "lucide-react";
+import { forwardRef, useEffect, useId, useImperativeHandle, useRef, useState, type AudioHTMLAttributes, type CSSProperties, type ReactNode } from "react";
 
 import styles from "./CyberAudioPlayer.module.css";
 import { usePlayerLoop } from "./usePlayerLoop";
 import { PlayerPitch } from "@/lib/player-pitch";
 
-type PlayerProps = Omit<AudioHTMLAttributes<HTMLAudioElement>, "src"> & { src?: string };
+type PlayerProps = Omit<AudioHTMLAttributes<HTMLAudioElement>, "src"> & {
+  src?: string;
+  visual?: ReactNode;
+  trackInfo?: { fileName: string; duration: string; size: string; format: string };
+};
 type MediaState = { playing: boolean; time: number; duration: number; volume: number; muted: boolean; rate: number; waiting: boolean; error: string };
 const initialState: MediaState = { playing: false, time: 0, duration: 0, volume: 1, muted: false, rate: 1, waiting: false, error: "" };
 
@@ -24,6 +28,7 @@ function loopTimestamp(seconds: number) {
 
 // Keep a real media element: existing waveform, timestamp and score controls use its ref/events.
 const PlayerSession = forwardRef<HTMLAudioElement, PlayerProps>(function PlayerSession(props, forwardedRef) {
+  const { trackInfo, visual, ...audioProps } = props;
   const audioRef = useRef<HTMLAudioElement>(null);
   const playerRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLButtonElement>(null);
@@ -135,9 +140,22 @@ const PlayerSession = forwardRef<HTMLAudioElement, PlayerProps>(function PlayerS
   const allowDownload = Boolean(props.src) && !controlsList.includes("nodownload");
   return (
     <div ref={playerRef} className={styles.player} role="group" aria-label={props["aria-label"] ?? "音樂播放器"} data-playing={media.playing}>
-      <audio {...props} ref={audioRef} controls={false} hidden />
-      <div className={styles.hud}>
-        <span className={styles.hudTitle}><AudioLines size={13} aria-hidden="true" />AUDIO<span>PLAYER</span></span>
+      <audio {...audioProps} ref={audioRef} controls={false} hidden />
+      {visual}
+      <div className={`${styles.hud} ${trackInfo ? styles.trackHud : ""}`}>
+        {trackInfo ? (
+          <div className={styles.trackInfo}>
+            <span className={styles.trackIcon} aria-hidden="true"><Disc3 size={18} /></span>
+            <div className={styles.trackText}>
+              <strong>{trackInfo.fileName}</strong>
+              <span className={styles.trackStats}>
+                <span className={styles.trackDuration}>音樂長度 <b>{trackInfo.duration}</b></span>
+                <span>{trackInfo.size}</span>
+                <span>{trackInfo.format}</span>
+              </span>
+            </div>
+          </div>
+        ) : <span className={styles.hudTitle}><AudioLines size={13} aria-hidden="true" />AUDIO<span>PLAYER</span></span>}
         <span className={styles.hudState}><i aria-hidden="true" />{media.playing ? "播放中" : "待機"}<span>{media.rate}×</span><span>{semitones === 0 ? "原調" : `${semitones > 0 ? "+" : ""}${semitones} 半音`}</span></span>
       </div>
       <div className={styles.controls}>
