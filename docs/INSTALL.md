@@ -6,6 +6,8 @@
 
 ## 安裝
 
+[開啟 GitHub 下載頁](https://github.com/tonymasing/songzu-music-os/releases/tag/v0.32.16.001)。私人倉庫需使用獲授權的 GitHub 帳號登入；沒有存取權時會看到 404。
+
 1. 從本專案 Releases 下載 `Songzu-Music-OS-0.32.16-arm64.dmg`。
 2. 打開 DMG，把「頌祖音樂 OS」拖到「應用程式」。
 3. 從「應用程式」開啟 App，等待本機服務啟動，從選單進入 DAW 或作品庫。
