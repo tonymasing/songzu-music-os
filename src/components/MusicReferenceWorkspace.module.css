@@ -7,12 +7,15 @@
 .missingAudio a:focus-visible { outline: 2px solid #3dffa0; outline-offset: 3px; }
 
 .listeningRow:global(.reference-listening-row) { display: block; min-width: 0; }
+.cardActions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.cardActions .mvToggle { display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: auto; min-width: 62px; padding-inline: 10px; font: 650 11px var(--font-number, monospace); letter-spacing: .05em; }
+.cardActions .mvToggle[aria-expanded="true"] { color: #3dffa0; border-color: #3dffa0; background: rgb(61 255 160 / 12%); }
+@media (max-width: 480px) { .cardActions { gap: 6px; } .cardActions .mvToggle { min-width: 42px; padding-inline: 8px; } .mvToggle svg { display: none; } }
 .noteDisclosure { min-width: 0; }
 .noteDisclosure > summary { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-height: 40px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; color: var(--text); background: transparent; cursor: pointer; list-style: none; font-size: 12px; font-weight: 650; }
 .noteDisclosure > summary::-webkit-details-marker { display: none; }
 .noteDisclosure > summary::marker { content: ""; }
 .noteDisclosure > summary > svg { flex: 0 0 auto; color: var(--warm); transition: transform 160ms ease; }
-.noteDisclosure > summary > small { margin-left: auto; color: var(--muted); font-size: 11px; font-weight: 400; }
 .noteDisclosure > summary:hover { border-color: var(--warm); background: color-mix(in srgb, var(--warm) 6%, transparent); }
 .noteDisclosure > summary:focus-visible { outline: 2px solid var(--warm); outline-offset: 3px; }
 .noteDisclosure[open] > summary > svg { transform: rotate(180deg); }
@@ -21,7 +24,6 @@
 .disclosureBody { display: grid; gap: 14px; padding-top: 14px; min-width: 0; }
 :global(.os-cyber) .noteDisclosure > summary { border-color: rgb(180 108 255 / 35%); background: linear-gradient(100deg, rgb(180 108 255 / 7%), rgb(61 255 160 / 3%)); }
 :global(.os-cyber) .noteDisclosure > summary:hover { border-color: #b46cff; background: rgb(180 108 255 / 11%); box-shadow: 0 0 10px rgb(180 108 255 / 12%); }
-@media (max-width: 480px) { .noteDisclosure > summary > small { display: none; } }
 @media (prefers-reduced-motion: reduce) { .noteDisclosure > summary > svg { transition: none; } }
 
 .mvViewport { position: relative; display: grid; place-items: center; aspect-ratio: 16 / 9; width: 100%; min-width: 0; overflow: hidden; border-radius: var(--os-radius-panel, 14px) var(--os-radius-panel, 14px) 10px 10px; border-bottom: 1px solid rgb(180 108 255 / 30%); background: radial-gradient(ellipse at 50% 50%, rgb(24 17 37 / 70%), transparent 70%), #060910; }
@@ -31,3 +33,14 @@
 .mvPlaceholder svg { color: #827097; stroke-width: 1.2; }
 .mvPlaceholder small { color: #74798e; font-size: 11px; letter-spacing: .04em; }
 @media (max-width: 480px) { .mvLabel { top: 10px; left: 12px; font-size: 9px; } .mvPlaceholder { gap: 6px; } }
+
+/* Translucent surfaces reveal scenery/MV while keeping text and controls fully opaque. */
+:global(.os-cyber) .referenceList > :global(.reference-card),
+:global(.os-cyber) .referenceList > :global(.reference-card):hover {
+  background: linear-gradient(125deg, rgb(25 17 36 / 50%), rgb(6 15 24 / 42%));
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+:global(.os-cyber) .referenceList .listeningRow > [role="group"]:not(:fullscreen) {
+  background: radial-gradient(ellipse at 0 0, rgb(180 108 255 / 8%), transparent 65%), linear-gradient(110deg, rgb(13 10 24 / 42%), rgb(3 14 20 / 36%));
+}

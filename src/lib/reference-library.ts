@@ -1,3 +1,4 @@
+import { getReferenceVideo } from "@/lib/reference-video";
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import { basename, extname, join, parse, resolve, sep } from "node:path";
@@ -414,6 +415,7 @@ export function assertReferenceAudioPath(path: string | null) {
 }
 
 export async function toMusicReferenceDto(item: ReferenceRecord) {
+  const video = await getReferenceVideo(item.id);
   let audioAvailable = false;
   if (item.externalAudioPath) {
     try {
@@ -446,6 +448,7 @@ export async function toMusicReferenceDto(item: ReferenceRecord) {
     status: item.status,
     energy: item.energy,
     audioAvailable,
+    videoUrl: video ? `/api/music-materials/${item.id}/video?v=${video.fileName.slice(0, 16)}` : null,
     audioUrl: audioAvailable ? `/api/music-materials/${item.id}/audio` : null,
     externalFileName: item.externalFileName,
     externalFileSizeBytes: item.externalFileSizeBytes,

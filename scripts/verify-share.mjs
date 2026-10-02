@@ -11,6 +11,7 @@ const ignored = new Set(["target", "node_modules", ".git", "__pycache__", "sound
 const bundled = JSON.parse(await readFile(join(root, "public/bundled-references/manifest.json"), "utf8"));
 assert.deepEqual(bundled.map(item => item.id).sort(), ["city-pop", "reggae-rocksteady"]);
 const audioAllowlist = new Map(bundled.map(item => [`public/bundled-references/${item.audio}`, item.audioSha256]));
+const videoAllowlist = new Map(bundled.map(item => [`public/bundled-references/${item.video.file}`, item.video.sha256]));
 const failures = [];
 let count = 0;
 async function walk(dir) {
@@ -32,6 +33,10 @@ async function inspect(path) {
   if (/\.(?:mp3|m4a|m4r|wav|flac|aac|ogg|aiff?)$/i.test(name)) {
     const digest = createHash("sha256").update(buffer).digest("hex");
     if (audioAllowlist.get(name) !== digest) failures.push({file:name, reason:"audio outside authorized two-file manifest"});
+  }
+  if (/\.(?:mp4|mov|webm|mkv|avi|m4v)$/i.test(name)) {
+    const digest = createHash("sha256").update(buffer).digest("hex");
+    if (videoAllowlist.get(name) !== digest) failures.push({file:name,reason:"video outside authorized two-file manifest"});
   }
   if (buffer.includes(0)) return;
   const source = buffer.toString("utf8");

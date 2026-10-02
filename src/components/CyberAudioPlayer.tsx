@@ -1,15 +1,18 @@
 "use client";
 
-import { AudioLines, Disc3, Download, Pause, Play, Repeat2, Settings, Volume2, VolumeX, X } from "lucide-react";
+import { AudioLines, Disc3, Download, Maximize, Minimize, Pause, Play, Repeat2, Settings, Volume2, VolumeX, X } from "lucide-react";
 import { forwardRef, useEffect, useId, useImperativeHandle, useRef, useState, type AudioHTMLAttributes, type CSSProperties, type ReactNode } from "react";
 
 import styles from "./CyberAudioPlayer.module.css";
 import { usePlayerLoop } from "./usePlayerLoop";
+import { useSyncedReferenceVideo } from "./useSyncedReferenceVideo";
+import { useFullscreenPlayerControls } from "./useFullscreenPlayerControls";
 import { PlayerPitch } from "@/lib/player-pitch";
 
 type PlayerProps = Omit<AudioHTMLAttributes<HTMLAudioElement>, "src"> & {
   src?: string;
   visual?: ReactNode;
+  videoSrc?: string;
   trackInfo?: { fileName: string; duration: string; size: string; format: string };
 };
 type MediaState = { playing: boolean; time: number; duration: number; volume: number; muted: boolean; rate: number; waiting: boolean; error: string };
@@ -28,11 +31,14 @@ function loopTimestamp(seconds: number) {
 
 // Keep a real media element: existing waveform, timestamp and score controls use its ref/events.
 const PlayerSession = forwardRef<HTMLAudioElement, PlayerProps>(function PlayerSession(props, forwardedRef) {
-  const { trackInfo, visual, ...audioProps } = props;
+  const { trackInfo, visual, videoSrc, ...audioProps } = props;
   const audioRef = useRef<HTMLAudioElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<HTMLDivElement>(null);
+  const chromeRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLButtonElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
+  const fullscreenButtonRef = useRef<HTMLButtonElement>(null);
   const lastVolume = useRef(1);
   const pitchRef = useRef<PlayerPitch | null>(null);
   const [semitones, setSemitones] = useState(0);
@@ -40,9 +46,38 @@ const PlayerSession = forwardRef<HTMLAudioElement, PlayerProps>(function PlayerS
   const [pitchError, setPitchError] = useState("");
   const [media, setMedia] = useState(initialState);
   const [optionsOpen, setOptionsOpen] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [screenError, setScreenError] = useState("");
+  const [videoError, setVideoError] = useState("");
   const optionsId = useId();
   const loop = usePlayerLoop(audioRef);
+  const hasVisual = Boolean(visual);
+  const chrome = useFullscreenPlayerControls(playerRef, chromeRef, fullscreen, optionsOpen);
+  useSyncedReferenceVideo(audioRef, videoRef, videoSrc, hasVisual, setVideoError);
   useImperativeHandle(forwardedRef, () => audioRef.current!, []);
+
+  useEffect(() => {
+    if (!hasVisual) return;
+    let wasFullscreen = false;
+    const syncFullscreen = () => {
+      const active = document.fullscreenElement === playerRef.current;
+      setFullscreen(active);
+      if (wasFullscreen && !active) fullscreenButtonRef.current?.focus({ preventScroll: true });
+      wasFullscreen = active;
+    };
+    document.addEventListener("fullscreenchange", syncFullscreen);
+    return () => document.removeEventListener("fullscreenchange", syncFullscreen);
+  }, [hasVisual]);
+
+  async function toggleFullscreen() {
+    setScreenError("");
+    try {
+      if (document.fullscreenElement === playerRef.current) await document.exitFullscreen();
+      else await playerRef.current!.requestFullscreen();
+    } catch {
+      setScreenError("目前無法進入全螢幕，請再試一次；仍可使用一般大小繼續播放。");
+    }
+  }
 
   useEffect(() => {
     const controller = new PlayerPitch(audioRef.current!, message => { setPitchError(message); setSemitones(0); });
@@ -139,9 +174,17 @@ const PlayerSession = forwardRef<HTMLAudioElement, PlayerProps>(function PlayerS
   const allowRate = !controlsList.includes("noplaybackrate");
   const allowDownload = Boolean(props.src) && !controlsList.includes("nodownload");
   return (
-    <div ref={playerRef} className={styles.player} role="group" aria-label={props["aria-label"] ?? "音樂播放器"} data-playing={media.playing}>
+    <div ref={playerRef} className={styles.player} role="group" aria-label={props["aria-label"] ?? "音樂播放器"} data-playing={media.playing} data-controls-visible={chrome.visible}>
       <audio {...audioProps} ref={audioRef} controls={false} hidden />
-      {visual}
+      {visual ? <div className={styles.visualFrame}>
+        {visual}
+        {videoSrc ? <video ref={videoRef} className={styles.video} src={videoSrc} muted loop playsInline preload="metadata" controls={false} disablePictureInPicture aria-label="歌曲 MV" onLoadedData={() => setVideoError("")} onError={() => setVideoError("MV 目前無法讀取，歌曲仍可正常播放。")} /> : null}
+        <div className={styles.screenControls} aria-label="影片顯示模式">
+          <button ref={fullscreenButtonRef} type="button" onClick={() => void toggleFullscreen()} aria-label={fullscreen ? "退出全螢幕" : "全螢幕"} title={fullscreen ? "退出全螢幕（Esc）" : "全螢幕"}>{fullscreen ? <Minimize size={19} aria-hidden="true" /> : <Maximize size={19} aria-hidden="true" />}</button>
+        </div>
+      </div> : null}
+      {fullscreen ? <button type="button" className={styles.revealControls} onPointerEnter={chrome.reveal} onFocus={chrome.reveal} onClick={chrome.reveal} aria-label="顯示播放控制">顯示播放控制</button> : null}
+      <div ref={chromeRef} className={styles.chrome} data-fullscreen-controls="true" inert={fullscreen && !chrome.visible} aria-hidden={fullscreen && !chrome.visible ? true : undefined}>
       <div className={`${styles.hud} ${trackInfo ? styles.trackHud : ""}`}>
         {trackInfo ? (
           <div className={styles.trackInfo}>
@@ -200,6 +243,9 @@ const PlayerSession = forwardRef<HTMLAudioElement, PlayerProps>(function PlayerS
       {media.error || (media.waiting && media.playing) ? <p className={styles.status} role="status">{media.error || "音檔載入中…"}</p> : null}
       {loop.message ? <p className={styles.status} role="status">{loop.message}</p> : null}
       {pitchError ? <p className={styles.status} role="status">{pitchError}</p> : null}
+      {screenError ? <p className={styles.status} role="status">{screenError}</p> : null}
+      {hasVisual && videoError ? <p className={styles.status} role="status">{videoError}</p> : null}
+      </div>
     </div>
   );
 });

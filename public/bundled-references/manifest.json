@@ -24,7 +24,13 @@
     "bitRate": 184767,
     "sizeBytes": 3299948,
     "audioSha256": "0b790237f91e14b07f8f82fcc3c9197942fb63b66ef6e5a04c17a771a533cfb2",
-    "noteSha256": "c4e9b92f618d345cb1f258aca655cb7eb978f359fd8b26fd9b0e562aebaf09bc"
+    "noteSha256": "c4e9b92f618d345cb1f258aca655cb7eb978f359fd8b26fd9b0e562aebaf09bc",
+    "video": {
+      "file": "city-pop-mv.mp4",
+      "sha256": "f63c2005b413f0f4d2085989f8397a9d1e747d93025f7d2d9f03841b7c9a9aa8",
+      "sizeBytes": 64075924,
+      "durationSeconds": 55.7
+    }
   },
   {
     "id": "reggae-rocksteady",
@@ -50,6 +56,12 @@
     "bitRate": 320159,
     "sizeBytes": 4362284,
     "audioSha256": "df1656a7ecb6e4041eaabd4ccef3627808e28ac517165997e70c45450720f198",
-    "noteSha256": "054234392e76a349d4f569afde37f2db0becf46d371b1261b69397db26030534"
+    "noteSha256": "054234392e76a349d4f569afde37f2db0becf46d371b1261b69397db26030534",
+    "video": {
+      "file": "reggae-rocksteady-mv.mp4",
+      "sha256": "bc3b1cf24d5dd9009949b4331cab1715c927b330fe3f4c03c846b85e2b5e5ac1",
+      "sizeBytes": 137056450,
+      "durationSeconds": 109.983333
+    }
   }
 ]

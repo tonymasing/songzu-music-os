@@ -3,6 +3,7 @@
 import { CyberAudioPlayer } from "@/components/CyberAudioPlayer";
 import styles from "./MusicReferenceWorkspace.module.css";
 import { ReferenceMotionCard } from "@/components/ReferenceMotionCard";
+import { ReferenceVideoBackdrop } from "@/components/ReferenceVideoBackdrop";
 
 import {
   ArrowLeft,
@@ -23,8 +24,8 @@ import { useMemo, useState } from "react";
 import type { MusicReferenceDto } from "@/lib/reference-library";
 
 type ReferenceHealth = {
-  bundledCount: number;
   available: boolean;
+  bundledCount: number;
   root: string;
   audioCount: number;
   noteCount: number;
@@ -91,6 +92,7 @@ export function MusicReferenceWorkspace({
   const [scanning, setScanning] = useState(false);
   const [message, setMessage] = useState("");
   const [lastReport, setLastReport] = useState<ImportReport | null>(null);
+  const [expandedMvs, setExpandedMvs] = useState<Set<string>>(() => new Set());
 
   const genres = useMemo(
     () => [...new Set(items.flatMap((item) => item.genres).filter(Boolean))].sort((a, b) => a.localeCompare(b, "zh-Hant")),
@@ -176,6 +178,7 @@ export function MusicReferenceWorkspace({
 
   return (
     <>
+      <ReferenceVideoBackdrop items={items} />
       <header className="dashboard-hero reference-library-hero">
         <div className="stack">
           <div className="reference-library-backline">
@@ -184,10 +187,10 @@ export function MusicReferenceWorkspace({
               音樂資料庫
             </Link>
             <span className={health.available ? "tag green" : "tag danger"}>
-              {health.available ? (health.bundledCount ? `內建 ${health.bundledCount} 首參考曲` : "資料庫已連線") : "外部來源離線"}
+              {health.available ? "資料庫已連線" : "外接資料庫離線"}
             </span>
           </div>
-          <span className="eyebrow">我的音樂風格資料庫</span>
+          <span className="eyebrow">Tony 的音樂風格資料庫</span>
           <h1>風格參考、偏好筆記與可用方向，都集中在這裡。</h1>
           <p className="subtle">參考音檔與 Markdown 維持原位；App 只建立唯讀索引、試聽通道與分類資料。</p>
           <div className="dashboard-actions">
@@ -240,7 +243,7 @@ export function MusicReferenceWorkspace({
         <div className="reference-filterbar">
           <label className="searchbox reference-searchbox">
             <Search size={16} />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜尋歌曲、歌手、曲風或 我的筆記" />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜尋歌曲、歌手、曲風或 Tony 的筆記" />
           </label>
           <select className="select" value={genre} onChange={(event) => setGenre(event.target.value)} aria-label="曲風篩選">
             <option value="ALL">所有曲風</option>
@@ -261,7 +264,7 @@ export function MusicReferenceWorkspace({
           <span>{health.noteOnlyCount + health.audioOnlyCount} 筆待補配對</span>
         </div>
 
-        <div className="reference-list">
+        <div className={`${styles.referenceList} reference-list`}>
           {filtered.map((item) => {
             const sourceUrl = safeHttpUrl(item.sourceUrl);
             return (
@@ -278,6 +281,22 @@ export function MusicReferenceWorkspace({
                     <h2>{item.title}</h2>
                     <p>{item.artist || "歌手待補"}</p>
                   </div>
+                  <div className={styles.cardActions}>
+                  {item.audioUrl ? <button
+                    type="button"
+                    className={`${styles.mvToggle} icon-button`}
+                    aria-label={expandedMvs.has(item.id) ? "收起 MV" : "展開 MV"}
+                    aria-expanded={expandedMvs.has(item.id)}
+                    aria-controls={`reference-mv-${item.id}`}
+                    title={expandedMvs.has(item.id) ? "收起 MV，僅顯示音樂播放器" : "展開 MV 影片區"}
+                    onClick={() => {
+                      setExpandedMvs(current => {
+                        const next = new Set(current);
+                        if (next.has(item.id)) next.delete(item.id); else next.add(item.id);
+                        return next;
+                      });
+                    }}
+                  ><Film size={16} aria-hidden="true" /><span>MV</span></button> : null}
                   <button
                     className={item.favorite ? "icon-button active" : "icon-button"}
                     onClick={() => toggleFavorite(item)}
@@ -286,6 +305,7 @@ export function MusicReferenceWorkspace({
                   >
                     <Star size={17} />
                   </button>
+                  </div>
                 </div>
 
                 <div className={`${styles.listeningRow} reference-listening-row`}>
@@ -295,16 +315,18 @@ export function MusicReferenceWorkspace({
                       preload="metadata"
                       src={item.audioUrl}
                       aria-label={`試聽 ${item.title}`}
-                      visual={
-                        <div className={styles.mvViewport} role="region" aria-label={`${item.title} MV 影片區`}>
+                      data-reference-id={item.id}
+                      videoSrc={item.videoUrl ?? undefined}
+                      visual={expandedMvs.has(item.id) ?
+                        <div id={`reference-mv-${item.id}`} className={styles.mvViewport} role="region" aria-label={`${item.title} MV 影片區`}>
                           <span className={styles.mvLabel}>MV <span>SCREEN</span></span>
-                          <div className={styles.mvPlaceholder}>
+                          {!item.videoUrl ? <div className={styles.mvPlaceholder}>
                             <Film size={28} aria-hidden="true" />
                             <span>MV 影片區</span>
                             <small>尚未加入影片</small>
-                          </div>
+                          </div> : null}
                         </div>
-                      }
+                      : null}
                       trackInfo={{
                         fileName: item.externalFileName || item.title,
                         duration: formatDuration(item.externalDurationSeconds),
@@ -325,7 +347,6 @@ export function MusicReferenceWorkspace({
                     <ChevronDown size={16} aria-hidden="true" />
                     <span className={styles.whenClosed}>展開筆記與分類</span>
                     <span className={styles.whenOpen}>收納筆記與分類</span>
-                    <small>喜歡 · 用途 · 注意事項</small>
                   </summary>
                   <div className={styles.disclosureBody}>
                 <div className="reference-note-grid">

@@ -794,12 +794,19 @@ async function runSmokeTest() {
             await new Promise(resolve => setTimeout(resolve, 250));
             const playing = !audio.paused && audio.currentTime > 0;
             audio.pause(); audio.removeAttribute('src'); audio.load();
-            if (!playing) return false;
+            if (!playing || !item.videoUrl) return false;
+            const video = document.createElement('video');
+            video.muted = true; video.src = item.videoUrl; document.body.append(video);
+            await video.play();
+            await new Promise(resolve => setTimeout(resolve, 400));
+            const decoded = video.videoWidth > 0 && video.currentTime > 0 && video.getVideoPlaybackQuality().totalVideoFrames > 0;
+            video.pause(); video.removeAttribute('src'); video.load(); video.remove();
+            if (!decoded) return false;
           }
           return true;
         })()`, true);
         if (!referencesReady) throw new Error("bundled reference playback smoke failed");
-        console.log("electron-smoke-bundled-references 2 matched/playable");
+        console.log("electron-smoke-bundled-references 2 matched/playable with decoded MV");
       }
       if (ready) {
         await smokeWindow.loadURL(`${baseUrl}/daw`);

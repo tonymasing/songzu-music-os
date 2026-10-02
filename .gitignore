@@ -35,3 +35,6 @@ native/**/target/
 ._*
 __pycache__/
 *.pyc
+
+# Video binaries ship in release/install assets, not Git history.
+public/bundled-references/*-mv.mp4

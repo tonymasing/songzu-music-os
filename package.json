@@ -1,6 +1,6 @@
 {
   "name": "ai-music-os",
-  "version": "0.32.18",
+  "version": "0.32.19",
   "private": true,
   "description": "本機優先的 AI 音樂創作、作品資料庫、音色資料庫與發行工作台。",
   "author": "Songzu",
@@ -34,7 +34,8 @@
     "sounds:drums": "node scripts/import-human-drum-kit.mjs",
     "harmony:setup": "node scripts/setup-harmony-engine.mjs",
     "references:import": "node scripts/import-hermes-music-db.mjs",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "references:videos": "node scripts/download-reference-videos.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.2",
